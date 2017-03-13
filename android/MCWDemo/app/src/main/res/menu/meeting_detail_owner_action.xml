@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/new_vote"
+        android:title="发起投票"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/my_vote"
+        android:title="我的投票"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/end_meeting"
+        android:title="结束会议"
+        app:showAsAction="never" />
+</menu>

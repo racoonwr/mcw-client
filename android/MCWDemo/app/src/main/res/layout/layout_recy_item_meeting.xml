@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/colorAccent"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="6"
+        android:orientation="vertical"
+        android:background="@color/blue">
+
+        <TextView style="@style/MeetingListItemLineTextStyle"
+            android:id="@+id/meeting_title_tv"
+            android:text="xxxx会议"/>
+
+        <TextView style="@style/MeetingListItemLineTextStyle"
+            android:id="@+id/meeting_location_tv"
+            android:text="xxxx地点"/>
+
+        <TextView style="@style/MeetingListItemLineTextStyle"
+            android:id="@+id/meeting_time_tv"
+            android:text="xxxx时间"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/meeting_status_tv"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:text="未开始"
+        android:background="@color/ampm_text_color"/>
+</LinearLayout>

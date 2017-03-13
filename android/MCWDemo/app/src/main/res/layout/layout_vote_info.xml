@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/add_vote_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        android:text="添加投票" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/vote_list_rv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:cacheColorHint="@null"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:scrollbars="none"/>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"/>
+
+</LinearLayout>

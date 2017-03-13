@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_create_meeting"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.mcw.demo.ui.activity.CreateMeetingActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/create_meeting_btn"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:elevation="10dp"
+                app:cardBackgroundColor="#ffffff"
+                app:cardCornerRadius="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <!--基础内容-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <!--会议主题-->
+                        <TextView
+                            style="@style/detail_item_title"
+                            android:text="会议主题" />
+
+                        <EditText
+                            style="@style/detail_item_content"
+                            android:hint="会议主题" />
+
+                        <!--会议时间-->
+                        <TextView
+                            style="@style/detail_item_title"
+                            android:text="会议时间" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="4.5"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_horizontal"
+                                    android:paddingTop="7dp"
+                                    android:text="开始时间"
+                                    android:textSize="12sp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <fr.ganfra.materialspinner.MaterialSpinner
+                                        android:id="@+id/start_date_ms"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="4.5"
+                                        app:ms_arrowColor="#000000"
+                                        app:ms_arrowSize="6dp"
+                                        app:ms_enableFloatingLabel="false"
+                                        app:ms_multiline="false"
+                                        app:ms_thickness="0dp" />
+
+                                    <fr.ganfra.materialspinner.MaterialSpinner
+                                        android:id="@+id/start_time_ms"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="4.5"
+                                        app:ms_arrowColor="#000000"
+                                        app:ms_arrowSize="6dp"
+                                        app:ms_enableFloatingLabel="false"
+                                        app:ms_multiline="false"
+                                        app:ms_thickness="0dp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginBottom="5dp"
+                                android:layout_marginTop="5dp"
+                                android:background="#e5e5e5" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="4.5"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_horizontal"
+                                    android:paddingTop="7dp"
+                                    android:text="结束时间"
+                                    android:textSize="12sp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <fr.ganfra.materialspinner.MaterialSpinner
+                                        android:id="@+id/end_date_ms"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="4.5"
+                                        app:ms_arrowColor="#000000"
+                                        app:ms_arrowSize="10dp"
+                                        app:ms_enableFloatingLabel="false"
+                                        app:ms_multiline="false"
+                                        app:ms_thickness="0dp" />
+
+                                    <fr.ganfra.materialspinner.MaterialSpinner
+                                        android:id="@+id/end_time_ms"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="4.5"
+                                        app:ms_arrowColor="#000000"
+                                        app:ms_arrowSize="10dp"
+                                        app:ms_enableFloatingLabel="false"
+                                        app:ms_multiline="false"
+                                        app:ms_thickness="0dp" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!--会议地址-->
+                        <TextView
+                            style="@style/detail_item_title"
+                            android:text="会议地址" />
+
+                        <EditText
+                            style="@style/detail_item_content"
+                            android:hint="会议地址" />
+
+
+                        <!--会议要求-->
+                        <TextView
+                            style="@style/detail_item_title"
+                            android:text="会议要求" />
+
+                        <EditText
+                            style="@style/detail_item_content"
+                            android:hint="会议要求" />
+
+
+                    </LinearLayout>
+                    <!--选择人-->
+                    <TextView
+                        style="@style/detail_item_title"
+                        android:text="与会人" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/people_select_rv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:cacheColorHint="@null"
+                        android:scrollbars="none" />
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="添加投票" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/vote_list_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:cacheColorHint="@null"
+                android:scrollbars="none" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+    <Button
+        android:id="@+id/create_meeting_btn"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bg_bottom_btn_common"
+        android:gravity="center"
+        android:text="创建"
+        android:textSize="16sp" />
+
+</RelativeLayout>
