@@ -12,67 +12,67 @@ import java.io.Serializable;
  * @date 2017/2/28
  */
 public class MeetingListItemEntity implements Serializable {
-    private int meetingId;
-    private int creator;
-    private long creationDate;
-    private long meetingDate;
-    private String meetingTitle;
-    private int meetingStatus;
-    private String meetingLocation;
+    private String meetingId;
+    private String createdBy;
+    private String title;
+    private long startDatePlan;
+    private long endDatePlan;
+    private String statusCode;
+    private String location;
 
-    public int getMeetingId() {
+    public String getMeetingId() {
         return meetingId;
     }
 
-    public void setMeetingId(int meetingId) {
+    public void setMeetingId(String meetingId) {
         this.meetingId = meetingId;
     }
 
-    public int getCreator() {
-        return creator;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    public void setCreator(int creator) {
-        this.creator = creator;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public long getCreationDate() {
-        return creationDate;
+    public long getEndDatePlan() {
+        return endDatePlan;
     }
 
-    public void setCreationDate(long creationDate) {
-        this.creationDate = creationDate;
+    public void setEndDatePlan(long endDatePlan) {
+        this.endDatePlan = endDatePlan;
     }
 
-    public long getMeetingDate() {
-        return meetingDate;
+    public long getStartDatePlan() {
+        return startDatePlan;
     }
 
-    public void setMeetingDate(long meetingDate) {
-        this.meetingDate = meetingDate;
+    public void setStartDatePlan(long startDatePlan) {
+        this.startDatePlan = startDatePlan;
     }
 
-    public String getMeetingTitle() {
-        return meetingTitle;
+    public String getTitle() {
+        return title;
     }
 
-    public void setMeetingTitle(String meetingTitle) {
-        this.meetingTitle = meetingTitle;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public int getMeetingStatus() {
-        return meetingStatus;
+    public String getStatusCode() {
+        return statusCode;
     }
 
-    public void setMeetingStatus(int meetingStatus) {
-        this.meetingStatus = meetingStatus;
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
     }
 
-    public String getMeetingLocation() {
-        return meetingLocation;
+    public String getLocation() {
+        return location;
     }
 
-    public void setMeetingLocation(String meetingLocation) {
-        this.meetingLocation = meetingLocation;
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

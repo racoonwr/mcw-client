@@ -88,6 +88,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                this.setResult(RESULT_CANCELED);
                 this.finish(); // back button
                 return true;
         }

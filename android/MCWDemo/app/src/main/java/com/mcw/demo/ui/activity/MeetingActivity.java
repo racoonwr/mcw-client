@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -14,6 +16,7 @@ import com.igeek.hfrecyleviewlib.HFGridMultiTypeGapDecoration;
 import com.igeek.hfrecyleviewlib.HFMultiTypeRecyAdapter;
 import com.igeek.hfrecyleviewlib.HolderTypeData;
 import com.mcw.R;
+import com.mcw.demo.api.DemoApiFactory;
 import com.mcw.demo.model.MeetingBaseInfoEntity;
 import com.mcw.demo.model.MyVoteItemEntity;
 import com.mcw.demo.model.SelectedUserEntity;
@@ -25,6 +28,8 @@ import com.mcw.demo.ui.adapter.bean.MeetingBaseInfoType;
 import com.mcw.demo.ui.adapter.bean.SelectedUserType;
 import com.mcw.demo.ui.adapter.bean.SummaryInfoType;
 import com.mcw.demo.ui.adapter.bean.VoteInfoType;
+import com.mcw.demo.util.rxjavaresult.ActivityResult;
+import com.mcw.demo.util.rxjavaresult.RxActivityResult;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,8 +43,11 @@ import cn.bingoogolapple.photopicker.activity.BGAPhotoPickerPreviewActivity;
 import cn.bingoogolapple.photopicker.widget.BGASortableNinePhotoLayout;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
+import rx.Observable;
+import rx.Subscriber;
 
-public class CreateMeetingV2Activity extends BaseActivity implements SelectedUserType.SelectedUserTypeSubViewOnClickListener, SummaryInfoType.NinePhotoLayoutListener {
+public class MeetingActivity extends BaseActivity implements SelectedUserType.SelectedUserTypeSubViewOnClickListener, SummaryInfoType.NinePhotoLayoutListener {
+
     private static final int REQUEST_CODE_PHOTO_PREVIEW = 1;
     private static final int REQUEST_CODE_PERMISSION_PHOTO_PICKER = 2;
     private static final int REQUEST_CODE_CHOOSE_PHOTO = 3;
@@ -50,19 +58,78 @@ public class CreateMeetingV2Activity extends BaseActivity implements SelectedUse
     public static final int TYPE_SELECTED_USER = 2;
     public static final int TYPE_VOTE_LIST = 3;
     public static final int TYPE_SUMMARY_INFO = 4;
-    @BindView(R.id.create_meeting_btn)
-    Button createMeetingBtn;
+    @BindView(R.id.meeting_action_btn)
+    Button meetingActionBtn;
 
+
+    private String meetingId, creatorId;
+    private int modelId;
+
+    List<HolderTypeData> datas;
+
+    private List<MyVoteItemEntity> myVoteList;
+    private List<SelectedUserEntity> selectedUserList;
+    private MeetingBaseInfoEntity meetingBaseInfoEntity;
 
     @Override
     protected int getContentViewLayoutResources() {
-        return R.layout.activity_create_meeting_v2;
+        return R.layout.activity_meeting;
     }
 
     @Override
     protected void initResource(Bundle savedInstanceState) {
         ButterKnife.bind(this);
-        setTitle("新建会议");
+
+        modelId = getIntent().getIntExtra("modelId", 0);
+        meetingId = getIntent().getStringExtra("meetingId");
+        creatorId = getIntent().getStringExtra("creatorId");
+
+        datas = new ArrayList<>();
+        MeetingBaseInfoType meetingBaseInfoType = new MeetingBaseInfoType();
+        meetingBaseInfoEntity = new MeetingBaseInfoEntity();
+        meetingBaseInfoEntity.setType(TYPE_MEETING_BASE_INFO);
+        meetingBaseInfoType.setData(meetingBaseInfoEntity);
+        datas.add(meetingBaseInfoType);
+
+        if (modelId == 1) {
+            setTitle("新建会议");
+            meetingActionBtn.setText("创建");
+
+        } else {
+            setTitle("会议详情");
+
+            DemoApiFactory.getInstance().getMeetingBaseInfo(meetingId).subscribe(new Subscriber<List<MeetingBaseInfoEntity>>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onNext(List<MeetingBaseInfoEntity> meetingBaseInfoEntities) {
+                    if (meetingBaseInfoEntities.size() > 0) {
+                        meetingBaseInfoEntity.setTitle(meetingBaseInfoEntities.get(0).getTitle());
+                        meetingBaseInfoEntity.setLocation(meetingBaseInfoEntities.get(0).getLocation());
+                        meetingBaseInfoEntity.setEndDatePlan(meetingBaseInfoEntities.get(0).getEndDatePlan());
+                        meetingBaseInfoEntity.setStartDatePlan(meetingBaseInfoEntities.get(0).getStartDatePlan());
+                        meetingBaseInfoEntity.setRequire(meetingBaseInfoEntities.get(0).getRequire());
+                        meetingBaseInfoEntity.setStatusCode(meetingBaseInfoEntities.get(0).getStatusCode());
+                        adapter.notifyItemChanged(0);
+
+                        //获取会议信息，根据会议信息设置按钮状态
+                        meetingActionBtn.setText("开始签到");
+                    }
+                }
+            });
+
+
+
+        }
+
         contentRv = (RecyclerView) findViewById(R.id.content_rv);
         if (adapter == null) {
             adapter = new HFMultiTypeRecyAdapter();
@@ -78,6 +145,7 @@ public class CreateMeetingV2Activity extends BaseActivity implements SelectedUse
         gapDecoration.setOffsetTopEnabled(false);
         contentRv.addItemDecoration(gapDecoration);
         adapter.refreshDatas(getTestDate());
+
         adapter.addSubViewListener(R.id.add_vote_btn, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,18 +160,10 @@ public class CreateMeetingV2Activity extends BaseActivity implements SelectedUse
         });
     }
 
-    private List<MyVoteItemEntity> myVoteList;
-    private List<SelectedUserEntity> selectedUserList;
-
 
     private List<HolderTypeData> getTestDate() {
-        List<HolderTypeData> datas = new ArrayList<>();
 
-        MeetingBaseInfoType meetingBaseInfoType = new MeetingBaseInfoType();
-        MeetingBaseInfoEntity entity = new MeetingBaseInfoEntity();
-        entity.setType(TYPE_MEETING_BASE_INFO);
-        meetingBaseInfoType.setData(entity);
-        datas.add(meetingBaseInfoType);
+
 
         SelectedUserType selectedUserType = new SelectedUserType(this);
         SelectedUserListEntity entity1 = new SelectedUserListEntity();
@@ -150,11 +210,13 @@ public class CreateMeetingV2Activity extends BaseActivity implements SelectedUse
         voteInfoType.setData(entity2);
         datas.add(voteInfoType);
 
-        SummaryInfoType summaryInfoType = new SummaryInfoType(this);
-        SummaryInfoEntity entity3 = new SummaryInfoEntity();
-        entity3.setType(TYPE_SUMMARY_INFO);
-        summaryInfoType.setData(entity3);
-        datas.add(summaryInfoType);
+        if (modelId == 2) {
+            SummaryInfoType summaryInfoType = new SummaryInfoType(this);
+            SummaryInfoEntity entity3 = new SummaryInfoEntity();
+            entity3.setType(TYPE_SUMMARY_INFO);
+            summaryInfoType.setData(entity3);
+            datas.add(summaryInfoType);
+        }
 
         return datas;
     }
@@ -165,25 +227,19 @@ public class CreateMeetingV2Activity extends BaseActivity implements SelectedUse
         adapter.notifyItemChanged(1);
     }
 
-    @OnClick(R.id.create_meeting_btn)
-    public void createMeeting(){
+    @OnClick(R.id.meeting_action_btn)
+    public void createMeeting() {
         this.setResult(RESULT_OK);
         this.finish();
     }
 
-    public static void navToMeetingDetail(Activity activity, int model){
-        Intent intent = new Intent(activity,CreateMeetingV2Activity.class);
-        intent.putExtra("model",1);
-        activity.startActivity(intent);
-    }
-
     @Override
-    public void onItemDelete(BGASortableNinePhotoLayout layout,int position) {
+    public void onItemDelete(BGASortableNinePhotoLayout layout, int position) {
         layout.removeItem(position);
     }
 
     @Override
-    public void onItemClick(BGASortableNinePhotoLayout layout,int position, String model, ArrayList<String> models) {
+    public void onItemClick(BGASortableNinePhotoLayout layout, int position, String model, ArrayList<String> models) {
         startActivityForResult(BGAPhotoPickerPreviewActivity.newIntent(this, layout.getMaxItemCount(), models, models, position, false), REQUEST_CODE_PHOTO_PREVIEW);
     }
 
@@ -197,6 +253,54 @@ public class CreateMeetingV2Activity extends BaseActivity implements SelectedUse
             startActivityForResult(BGAPhotoPickerActivity.newIntent(this, true ? takePhotoDir : null, layout.getMaxItemCount() - layout.getItemCount(), null, false), REQUEST_CODE_CHOOSE_PHOTO);
         } else {
             EasyPermissions.requestPermissions(this, "图片选择需要以下权限:\n\n1.访问设备上的照片\n\n2.拍照", REQUEST_CODE_PERMISSION_PHOTO_PICKER, perms);
+        }
+    }
+
+
+    public static Observable<ActivityResult> navToCreateMeeting(Activity activity) {
+        Intent intent = new Intent(activity, MeetingActivity.class);
+        intent.putExtra("modelId", 1);
+        return RxActivityResult.getInstance(activity).from(activity).startActivityForResult(intent, 1);
+    }
+
+    public static void navToViewMeetingDetail(Activity activity, String meetingId, String creatorId) {
+        Intent intent = new Intent(activity, MeetingActivity.class);
+        intent.putExtra("modelId", 2);
+        intent.putExtra("meetingId", meetingId);
+        intent.putExtra("creatorId", creatorId);
+        activity.startActivity(intent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (modelId == 2) {
+            if (creatorId != null && !"1".equals(creatorId)) {
+                getMenuInflater().inflate(R.menu.meeting_detail_participation_action, menu);
+            } else {
+                getMenuInflater().inflate(R.menu.meeting_detail_owner_action, menu);
+            }
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.scan) {
+            Intent intent = new Intent(this, ScanQRCodeActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (item.getItemId() == R.id.my_vote) {
+            Intent intent = new Intent(this, MyVoteActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (item.getItemId() == R.id.new_vote) {
+            Intent intent = new Intent(this, CreateVoteActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (item.getItemId() == R.id.end_meeting) {
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 }

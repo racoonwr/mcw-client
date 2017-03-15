@@ -32,10 +32,10 @@ public class MeetingListRecyclerViewAdapter extends HFSingleTypeRecyAdapter<Meet
 
     @Override
     public void bindDataToHolder(RecyViewHolder holder, MeetingListItemEntity entity, int position) {
-        holder.meetingTitle.setText(entity.getMeetingTitle());
-        holder.meetingTime.setText("" + entity.getMeetingDate());
-        holder.meetingLocation.setText(entity.getMeetingLocation());
-        holder.meetingStatus.setText("" + entity.getMeetingId());
+        holder.meetingTitle.setText(entity.getTitle());
+        holder.meetingTime.setText("" + entity.getStartDatePlan());
+        holder.meetingLocation.setText(entity.getLocation());
+        holder.meetingStatus.setText("" + entity.getStatusCode());
     }
 
     public static class RecyViewHolder extends BasicRecyViewHolder {
@@ -44,7 +44,7 @@ public class MeetingListRecyclerViewAdapter extends HFSingleTypeRecyAdapter<Meet
 
         public RecyViewHolder(View itemView) {
             super(itemView);
-            meetingTitle = (TextView) itemView.findViewById(R.id.meeting_time_tv);
+            meetingTitle = (TextView) itemView.findViewById(R.id.meeting_title_tv);
             meetingTime = (TextView) itemView.findViewById(R.id.meeting_time_tv);
             meetingLocation = (TextView) itemView.findViewById(R.id.meeting_location_tv);
             meetingStatus = (TextView) itemView.findViewById(R.id.meeting_status_tv);

@@ -62,7 +62,7 @@ public class CreateMeetingActivity extends BaseActivity implements BasicRecyView
     @Override
     protected void initResource(Bundle savedInstanceState) {
         setTitle("新建会议");
-        createMeetingBtn = (Button) findViewById(R.id.create_meeting_btn);
+        createMeetingBtn = (Button) findViewById(R.id.meeting_action_btn);
         createMeetingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

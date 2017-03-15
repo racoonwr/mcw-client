@@ -3,17 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mcw.demo.ui.activity.CreateMeetingV2Activity">
+    tools:context="com.mcw.demo.ui.activity.MeetingActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/content_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/create_meeting_btn" />
+        android:layout_above="@+id/meeting_action_btn" />
 
 
     <Button
-        android:id="@+id/create_meeting_btn"
+        android:id="@+id/meeting_action_btn"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_alignParentBottom="true"

@@ -18,12 +18,22 @@ public class MeetingBaseInfoEntity {
         this.type = type;
     }
 
+    private String meetingId;
     private int type;
     private String title;
     private String location;
     private String require;
     private long startDatePlan;
     private long endDatePlan;
+    private String statusCode;
+
+    public String getMeetingId() {
+        return meetingId;
+    }
+
+    public void setMeetingId(String meetingId) {
+        this.meetingId = meetingId;
+    }
 
     public String getTitle() {
         return title;
@@ -63,5 +73,13 @@ public class MeetingBaseInfoEntity {
 
     public void setEndDatePlan(long endDatePlan) {
         this.endDatePlan = endDatePlan;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
     }
 }

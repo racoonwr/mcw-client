@@ -68,6 +68,50 @@ public class ChartDetailActivity extends BaseActivity {
         entity.setName("1222");
         entity.setPreview(true);
         agreeList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        agreeList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        agreeList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        agreeList.add(entity);entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        agreeList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        agreeList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        agreeList.add(entity);entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        agreeList.add(entity);entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        agreeList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        agreeList.add(entity);entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        agreeList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        agreeList.add(entity);
+
+
+
+
         agreeAdapter.appendDatas(agreeList);
 
         if (rejectAdapter == null) {
@@ -91,7 +135,37 @@ public class ChartDetailActivity extends BaseActivity {
         entity.setName("1222");
         entity.setPreview(true);
         rejectList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        rejectList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        rejectList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        rejectList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        rejectList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        rejectList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        rejectList.add(entity);
+        entity = new SelectedUserEntity();
+        entity.setName("1222");
+        entity.setPreview(true);
+        rejectList.add(entity);
+
         rejectAdapter.appendDatas(rejectList);
+
 
         if (giveUpAdapter == null) {
             giveUpAdapter = new PeopleSelectRecyclerViewAdapter();

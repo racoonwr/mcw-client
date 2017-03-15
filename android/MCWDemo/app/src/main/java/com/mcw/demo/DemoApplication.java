@@ -3,6 +3,7 @@ package com.mcw.demo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import com.mcw.demo.api.NetworkConfigManager;
 import com.mcw.demo.config.AppConfig;
 
 import java.util.Properties;
@@ -25,6 +26,8 @@ public class DemoApplication extends BaseApplication {
         super.onCreate();
         instance = this;
         init();
+
+        NetworkConfigManager.getInstance().setRootUrl("http://192.168.1.107:8081/");
 
 //        Thread.setDefaultUncaughtExceptionHandler(AppException
 //                .getAppExceptionHandler(this));

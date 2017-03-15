@@ -1,5 +1,7 @@
 package com.mcw.demo.ui.adapter.bean;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -25,7 +27,6 @@ import fr.ganfra.materialspinner.MaterialSpinner;
  */
 public class MeetingBaseInfoType extends BaseHolderType<MeetingBaseInfoEntity, MeetingBaseInfoType.Viewholder> {
 
-
     @Override
     public BasicRecyViewHolder buildHolder(ViewGroup parent) {
         return new Viewholder(View.inflate(parent.getContext(), R.layout.layout_meeting_base_info, null));
@@ -37,7 +38,61 @@ public class MeetingBaseInfoType extends BaseHolderType<MeetingBaseInfoEntity, M
     }
 
     @Override
-    public void bindDataToHolder(Viewholder holder, MeetingBaseInfoEntity meetingBaseInfoEntity, int postion) {
+    public void bindDataToHolder(Viewholder holder, final MeetingBaseInfoEntity meetingBaseInfoEntity, int postion) {
+        holder.meetingTitleEt.setText(meetingBaseInfoEntity.getTitle());
+        holder.meetingTitleEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                meetingBaseInfoEntity.setTitle(s.toString());
+            }
+        });
+        holder.meetingRequire.setText(meetingBaseInfoEntity.getRequire());
+        holder.meetingRequire.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                meetingBaseInfoEntity.setRequire(s.toString());
+            }
+        });
+        holder.meetingAddressEt.setText(meetingBaseInfoEntity.getLocation());
+        holder.meetingAddressEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                meetingBaseInfoEntity.setLocation(s.toString());
+            }
+        });
+        long startDatePlan = meetingBaseInfoEntity.getStartDatePlan();
+        long endDatePlan = meetingBaseInfoEntity.getEndDatePlan();
+
 
     }
 
@@ -63,7 +118,7 @@ public class MeetingBaseInfoType extends BaseHolderType<MeetingBaseInfoEntity, M
 
         public Viewholder(View itemView, OnItemClickListener clickListener, OnItemLongClickListener longClickListener) {
             super(itemView, clickListener, longClickListener);
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
 
         }
     }

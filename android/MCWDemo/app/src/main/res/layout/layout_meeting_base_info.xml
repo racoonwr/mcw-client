@@ -134,14 +134,13 @@
 
             <!--会议地址-->
             <TextView
-                android:id="@+id/meeting_address_et"
                 style="@style/detail_item_title"
                 android:text="会议地址" />
 
             <EditText
                 style="@style/detail_item_content"
+                android:id="@+id/meeting_address_et"
                 android:hint="会议地址" />
-
 
             <!--会议要求-->
             <TextView

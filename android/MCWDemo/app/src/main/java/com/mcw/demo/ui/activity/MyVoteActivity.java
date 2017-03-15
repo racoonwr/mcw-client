@@ -1,5 +1,6 @@
 package com.mcw.demo.ui.activity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -8,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.igeek.hfrecyleviewlib.BasicRecyViewHolder;
+import com.igeek.hfrecyleviewlib.HFLineVerComDecoration;
 import com.mcw.R;
 import com.mcw.demo.model.MyVoteItemEntity;
 import com.mcw.demo.ui.adapter.MyVoteRecyclerViewAdapter;
@@ -56,6 +58,7 @@ public class MyVoteActivity extends BaseActivity implements BasicRecyViewHolder.
         }
         myVoteRv.setAdapter(adapter);
         myVoteRv.setItemAnimator(new DefaultItemAnimator());
+        myVoteRv.addItemDecoration(new HFLineVerComDecoration(1, Color.parseColor("#efefef")));
         myVoteRv.setLayoutManager(new LinearLayoutManager(this));
         adapter.refreshDatas(votes);
         myVoteSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

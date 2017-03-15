@@ -1,7 +1,5 @@
 package com.mcw.demo.ui.fragment;
 
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,16 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.igeek.hfrecyleviewlib.BasicRecyViewHolder;
-import com.igeek.hfrecyleviewlib.HFLineVerComDecoration;
 import com.igeek.hfrecyleviewlib.RecycleScrollListener;
 import com.mcw.R;
 import com.mcw.demo.model.MeetingListItemEntity;
 import com.mcw.demo.presenter.MeetingFragmentPresenter;
-import com.mcw.demo.ui.activity.CreateMeetingV2Activity;
-import com.mcw.demo.ui.activity.MeetingDetailActivity;
+import com.mcw.demo.ui.activity.MeetingActivity;
 import com.mcw.demo.ui.adapter.MeetingListRecyclerViewAdapter;
 import com.mcw.demo.util.rxjavaresult.ActivityResult;
-import com.mcw.demo.util.rxjavaresult.RxActivityResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +114,8 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
 
     @Override
     public void finishLoadNetMeetingData(List<MeetingListItemEntity> newMeetingData) {
-        adapter.insertDatas(0, newMeetingData);
+        if (newMeetingData != null)
+            adapter.insertDatas(0, newMeetingData);
         meetingSrl.setRefreshing(false);
     }
 
@@ -140,7 +136,6 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
             adapter.setItemClickListener(this);
         }
         meetingListRv.setAdapter(adapter);
-        meetingListRv.addItemDecoration(new HFLineVerComDecoration(1, Color.parseColor("#929292")));
         meetingListRv.addOnScrollListener(scrollListener);
         meetingListRv.setItemAnimator(new DefaultItemAnimator());
         meetingListRv.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -168,8 +163,8 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
 
     @Override
     public void OnItemClick(View v, int adapterPosition) {
-        MeetingDetailActivity.navToMeetingDetail(getActivity(), adapter.getData(adapterPosition).getMeetingId(),
-                adapter.getData(adapterPosition).getCreator());
+        MeetingActivity.navToViewMeetingDetail(getActivity(), adapter.getData(adapterPosition).getMeetingId(),
+                adapter.getData(adapterPosition).getCreatedBy());
     }
 
     @Override
@@ -181,9 +176,7 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.new_meeting) {
-//            Intent intent = new Intent(getActivity(), CreateMeetingActivity.class);
-            Intent intent = new Intent(getActivity(), CreateMeetingV2Activity.class);
-            RxActivityResult.getInstance(getActivity()).from(getActivity()).startActivityForResult(intent, 1).subscribe(new Subscriber<ActivityResult>() {
+            MeetingActivity.navToCreateMeeting(getActivity()).subscribe(new Subscriber<ActivityResult>() {
                 @Override
                 public void onCompleted() {
 
@@ -196,15 +189,17 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
 
                 @Override
                 public void onNext(ActivityResult activityResult) {
-                    MeetingListItemEntity entity = new MeetingListItemEntity();
-                    entity.setMeetingDate(1111111l);
-                    entity.setCreationDate(1111111l);
-                    entity.setMeetingId(5);
-                    entity.setMeetingLocation("会议室2");
-                    entity.setMeetingStatus(1);
-                    entity.setCreator(1);
-                    adapter.insertData(0, entity);
-                    meetingListRv.smoothScrollToPosition(0);
+                    if (activityResult.isOk()) {
+                        MeetingListItemEntity entity = new MeetingListItemEntity();
+                        entity.setStartDatePlan(1111111l);
+                        entity.setEndDatePlan(1111111l);
+                        entity.setMeetingId("5");
+                        entity.setLocation("会议室2");
+                        entity.setStatusCode("1");
+                        entity.setCreatedBy("1");
+                        adapter.insertData(0, entity);
+                        meetingListRv.smoothScrollToPosition(0);
+                    }
                 }
             });
             return true;
