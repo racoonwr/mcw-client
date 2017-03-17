@@ -16,6 +16,7 @@ import android.widget.EditText;
  * Created by Alex on 2016/5/23.
  */
 public abstract class BaseActivity extends AppCompatActivity {
+    private BaseActivity mContext;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,6 +31,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         initResource(savedInstanceState);
+        mContext = this;
     }
 
     /**

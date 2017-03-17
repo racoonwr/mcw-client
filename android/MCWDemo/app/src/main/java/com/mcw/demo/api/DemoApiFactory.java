@@ -6,10 +6,12 @@ import com.mcw.demo.model.MyVoteItemEntity;
 import com.mcw.demo.model.SelectedUserEntity;
 import com.mcw.demo.model.SummaryInfoEntity;
 import com.mcw.demo.model.UserInfo;
+import com.mcw.demo.model.VoteDetailEntity;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import rx.Observable;
 
@@ -95,4 +97,35 @@ public class DemoApiFactory extends ApiFactory {
     public Observable<List<SummaryInfoEntity>> getSummaryInfo(String summaryInfoId) {
         return apiService.getSummaryInfo(summaryInfoId).map(new HttpResultFunc<List<SummaryInfoEntity>>()).compose(SchedulersCompat.<List<SummaryInfoEntity>>applyExecutorSchedulers());
     }
+
+    public Observable<Boolean> createVoteList(String meetingId,List<MyVoteItemEntity> list) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("meetingId", meetingId);
+        map.put("list", list);
+        return apiService.createVoteList(map).map(new HttpResultFunc<Boolean>()).compose(SchedulersCompat.<Boolean>applyExecutorSchedulers());
+    }
+
+    public Observable<List<VoteDetailEntity>> getVoteDetail(String voteId) {
+        return apiService.getVoteDetail(voteId,UserInfo.getInstance().getId()).map(new HttpResultFunc<List<VoteDetailEntity>>()).compose(SchedulersCompat.<List<VoteDetailEntity>>applyExecutorSchedulers());
+    }
+
+    public Observable<Boolean> createVoteRecord(String resultCode,String voteId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("resultCode", resultCode);
+        map.put("recordId", UUID.randomUUID().toString());
+        map.put("voteId", voteId);
+        map.put("userId", UserInfo.getInstance().getId());
+        return apiService.createVoteRecord(map).map(new HttpResultFunc<Boolean>()).compose(SchedulersCompat.<Boolean>applyExecutorSchedulers());
+    }
+
+    public Observable<Boolean> createVote(String meetingId,MyVoteItemEntity entity) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("voteId", entity.getVoteId());
+        map.put("meetingId",meetingId);
+        map.put("voteContent", entity.getVoteContent());
+        map.put("anonymity", entity.getAnonymity());
+        map.put("userId", UserInfo.getInstance().getId());
+        return apiService.createVote(map).map(new HttpResultFunc<Boolean>()).compose(SchedulersCompat.<Boolean>applyExecutorSchedulers());
+    }
+
 }

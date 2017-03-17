@@ -43,11 +43,13 @@
                     android:textColor="@color/black" />
 
                 <LinearLayout
+                    android:id="@+id/btns_ll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <Button
+                        android:id="@+id/reject_btn"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -55,6 +57,7 @@
                         android:text="反对" />
 
                     <Button
+                        android:id="@+id/giveup_btn"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -62,6 +65,7 @@
                         android:text="弃权" />
 
                     <Button
+                        android:id="@+id/keep_btn"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -69,6 +73,7 @@
                         android:text="保留" />
 
                     <Button
+                        android:id="@+id/agree_btn"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

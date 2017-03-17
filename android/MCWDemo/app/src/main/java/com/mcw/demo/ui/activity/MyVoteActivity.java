@@ -63,7 +63,7 @@ public class MyVoteActivity extends BaseActivity implements BasicRecyViewHolder.
             }
         });
 
-        DemoApiFactory.getInstance().getVoteList("sss").subscribe(new Subscriber<List<MyVoteItemEntity>>() {
+        DemoApiFactory.getInstance().getVoteList(meetingId).subscribe(new Subscriber<List<MyVoteItemEntity>>() {
             @Override
             public void onCompleted() {
 

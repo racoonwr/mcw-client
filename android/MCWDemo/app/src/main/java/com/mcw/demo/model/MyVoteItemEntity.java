@@ -1,5 +1,7 @@
 package com.mcw.demo.model;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
 /**
@@ -11,12 +13,14 @@ import java.io.Serializable;
  * @email wurun@zizizizizi.com
  * @date 2017/3/6
  */
-public class MyVoteItemEntity implements Serializable{
+public class MyVoteItemEntity implements Serializable {
     private String voteContent;
     private String voteId;
     private String statusCode;
+    @Expose
     private String voteCreatorName;
     private int anonymity;
+    private String userId;
 
     public String getVoteContent() {
         return voteContent;
@@ -50,11 +54,19 @@ public class MyVoteItemEntity implements Serializable{
         this.voteCreatorName = voteCreatorName;
     }
 
-    public int isAnonymity() {
+    public int getAnonymity() {
         return anonymity;
     }
 
     public void setAnonymity(int anonymity) {
         this.anonymity = anonymity;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

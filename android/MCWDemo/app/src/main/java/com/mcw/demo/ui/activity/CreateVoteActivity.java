@@ -43,7 +43,7 @@ public class CreateVoteActivity extends BaseActivity {
     public void createVote() {
         Bundle bundle = new Bundle();
         bundle.putString("voteContent", voteContextEt.getText().toString());
-        bundle.putBoolean("noName",noNameCb.isChecked());
+        bundle.putInt("noName",noNameCb.isChecked()?1:0);
         setResult(RESULT_OK,getIntent().putExtras(bundle));
         this.finish();
     }

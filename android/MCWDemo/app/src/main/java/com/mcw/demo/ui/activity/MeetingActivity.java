@@ -134,8 +134,8 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
                 public void onNext(ActivityResult activityResult) {
                     if (activityResult.isOk()) {
                         MyVoteItemEntity myVoteItemEntity = new MyVoteItemEntity();
-                        myVoteItemEntity.setVoteCreatorName("z333");
-                        myVoteItemEntity.setVoteId("1");
+                        myVoteItemEntity.setUserId(UserInfo.getInstance().getId());
+                        myVoteItemEntity.setVoteId(UUID.randomUUID().toString());
                         myVoteItemEntity.setStatusCode("INVOTING");
                         myVoteItemEntity.setVoteContent(activityResult.getData().getStringExtra("voteContent"));
                         myVoteItemEntity.setAnonymity(activityResult.getData().getIntExtra("noName", 1));
@@ -226,7 +226,7 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
         } else {
             setTitle("会议详情");
             if ("SUMMARY".equals(statusCode) || "FINISHED".equals(statusCode)) {
-                if ("SUMMARY".equals(statusCode)&&createdBy.equals(UserInfo.getInstance().getId())){
+                if ("SUMMARY".equals(statusCode) && createdBy.equals(UserInfo.getInstance().getId())) {
                     modelType = MODEL_TYPE_INPUT_SUMMARY;
                 }
                 SummaryInfoType summaryInfoType = new SummaryInfoType(mContext, customTimeEditViewOnTouchListener);
@@ -366,19 +366,41 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
             @Override
             public void onError(Throwable e) {
                 e.printStackTrace();
-                ToastMaster.popToast(mContext, "创建失败");
+                ToastMaster.popToast(mContext, "基础信息录入失败");
             }
 
             @Override
             public void onNext(Boolean aBoolean) {
                 if (aBoolean.booleanValue()) {
-                    ToastMaster.popToast(mContext, "上传成功");
-                    Intent intent = getIntent();
-                    intent.putExtra("meetingInfo", new Gson().toJson(meetingBaseInfoEntity));
-                    mContext.setResult(RESULT_OK, intent);
-                    mContext.finish();
+                    ToastMaster.popToast(mContext, "基础信息录入成功");
+
+                    DemoApiFactory.getInstance().createVoteList(meetingBaseInfoEntity.getMeetingId(), myVoteList).subscribe(new Subscriber<Boolean>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            ToastMaster.popToast(mContext, "投票录入失败");
+                        }
+
+                        @Override
+                        public void onNext(Boolean aBoolean) {
+                            if (aBoolean.booleanValue()) {
+                                ToastMaster.popToast(mContext, "投票信息录入成功");
+                                Intent intent = getIntent();
+                                intent.putExtra("meetingInfo", new Gson().toJson(meetingBaseInfoEntity));
+                                mContext.setResult(RESULT_OK, intent);
+                                mContext.finish();
+                            } else {
+                                ToastMaster.popToast(mContext, "投票录入失败");
+                            }
+                        }
+                    });
                 } else {
-                    ToastMaster.popToast(mContext, "上传成功");
+                    ToastMaster.popToast(mContext, "基础信息录入失败");
                 }
             }
         });
@@ -466,7 +488,35 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
             @Override
             public void onNext(ActivityResult activityResult) {
                 if (activityResult.isOk()) {
-                    MyVoteActivity.navToMyVote(mContext, meetingId);
+                    MyVoteItemEntity myVoteItemEntity = new MyVoteItemEntity();
+                    myVoteItemEntity.setUserId(UserInfo.getInstance().getId());
+                    myVoteItemEntity.setVoteId(UUID.randomUUID().toString());
+                    myVoteItemEntity.setStatusCode("INVOTING");
+                    myVoteItemEntity.setVoteContent(activityResult.getData().getStringExtra("voteContent"));
+                    myVoteItemEntity.setAnonymity(activityResult.getData().getIntExtra("noName", 1));
+
+                    DemoApiFactory.getInstance().createVote(meetingId,myVoteItemEntity).subscribe(new Subscriber<Boolean>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            ToastMaster.popToast(mContext,"创建投票失败");
+                        }
+
+                        @Override
+                        public void onNext(Boolean aBoolean) {
+                            if (aBoolean.booleanValue()){
+                                MyVoteActivity.navToMyVote(mContext, meetingId);
+                            }else{
+                                ToastMaster.popToast(mContext,"创建投票失败");
+                            }
+                        }
+                    });
+
                 }
             }
         });
@@ -545,10 +595,10 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
         }
         meetingActionBtn.setText(buttonText);
         changeOptionsMenu();
-        if (meetingBaseInfoEntity!=null){
+        if (meetingBaseInfoEntity != null) {
             meetingBaseInfoEntity.setModelType(modelType);
         }
-        if (summaryInfoEntity!=null){
+        if (summaryInfoEntity != null) {
             summaryInfoEntity.setModelType(modelType);
         }
     }

@@ -6,6 +6,7 @@ import com.mcw.demo.model.MeetingListItemEntity;
 import com.mcw.demo.model.MyVoteItemEntity;
 import com.mcw.demo.model.SelectedUserEntity;
 import com.mcw.demo.model.SummaryInfoEntity;
+import com.mcw.demo.model.VoteDetailEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -85,16 +86,52 @@ public interface ApiService {
     @Headers("Content-Type:" + RetrofitClient.JSON)
     Observable<ApiResponse<Boolean>> endMeeting(@Body Map params);
 
-
-
     /**
-     * 获取会议列表
+     * 获取投票列表
      *
      * @return
      */
     @GET("vote/list/{meetingId}")
     @Headers("Content-Type:" + RetrofitClient.JSON)
     Observable<ApiResponse<List<MyVoteItemEntity>>> getVoteList(@Path("meetingId") String meetingId);
+
+    /**
+     * 获取投票详情
+     *
+     * @return
+     */
+    @GET("vote/detail/{voteId}/{userId}")
+    @Headers("Content-Type:" + RetrofitClient.JSON)
+    Observable<ApiResponse<List<VoteDetailEntity>>> getVoteDetail(@Path("voteId") String voteId,@Path("userId") String userId);
+
+    /**
+     * 创建投票记录
+     *
+     * @return
+     */
+    @POST("vote/record/create")
+    @Headers("Content-Type:" + RetrofitClient.JSON)
+    Observable<ApiResponse<Boolean>> createVoteRecord(@Body Map params);
+
+    /**
+     * 创建投票列表
+     *
+     * @param params
+     * @return
+     */
+    @POST("vote/create/list")
+    @Headers("Content-Type:" + RetrofitClient.JSON)
+    Observable<ApiResponse<Boolean>> createVoteList(@Body Map params);
+
+    /**
+     * 创建投票项
+     *
+     * @param params
+     * @return
+     */
+    @POST("vote/create/single")
+    @Headers("Content-Type:" + RetrofitClient.JSON)
+    Observable<ApiResponse<Boolean>> createVote(@Body Map params);
 
     /**
      * 创建会议纪要

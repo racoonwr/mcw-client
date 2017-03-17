@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -19,17 +22,31 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.mcw.R;
+import com.mcw.demo.api.DemoApiFactory;
+import com.mcw.demo.model.VoteDetailEntity;
+import com.mcw.demo.util.ToastMaster;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Subscriber;
 
 public class VoteDetailActivity extends BaseActivity implements OnChartValueSelectedListener {
-    protected String[] mParties = new String[] {
+
+    @BindView(R.id.btns_ll)
+    LinearLayout btnsLl;
+    private VoteDetailActivity mContext;
+    protected String[] mParties = new String[]{
             "同意", "反对", "保留", "弃权"
     };
+
+    private int[] counts;
+    @BindView(R.id.vote_result_tv)
+    TextView voteResultTv;
 
     private String voteId;
     private Typeface tf;
@@ -51,9 +68,10 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
     @Override
     protected void initResource(Bundle savedInstanceState) {
         ButterKnife.bind(this);
+        mContext = this;
         setTitle("投票详情");
         voteId = getIntent().getStringExtra("voteId");
-        voteContextTv.setText(""+voteId);
+        voteContextTv.setText(voteId);
 
 
         voteChart.setUsePercentValues(true);
@@ -91,8 +109,6 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
         // add a selection listener
         voteChart.setOnChartValueSelectedListener(this);
 
-        setData(4, 100);
-
         voteChart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
         // mChart.spin(2000, 0, 360);
 
@@ -102,19 +118,61 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
         l.setDrawInside(false);
         l.setEnabled(false);
+
+        DemoApiFactory.getInstance().getVoteDetail(voteId).subscribe(new Subscriber<List<VoteDetailEntity>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+                ToastMaster.popToast(mContext, "获取投票详情失败");
+            }
+
+            @Override
+            public void onNext(List<VoteDetailEntity> voteDetailEntities) {
+                if (voteDetailEntities != null && voteDetailEntities.size() > 0) {
+                    VoteDetailEntity entity = voteDetailEntities.get(0);
+                    counts = new int[]{entity.getCountAgree(),
+                            entity.getCountReject(),
+                            entity.getCountKeep(),
+                            entity.getCountGiveup()};
+
+                    voteContextTv.setText(entity.getVoteContent());
+                    setData(counts);
+                    if (entity.getHasVoted() == 1) {//已投票
+                        btnsLl.setVisibility(View.GONE);
+                        voteResultTv.setVisibility(View.VISIBLE);
+                        voteResultTv.setText("已选择：");
+                    } else {//未投票
+                        voteResultTv.setVisibility(View.GONE);
+                    }
+                    chartDetailTv.setVisibility(entity.getAnonymity() == 1 ? View.GONE : View.VISIBLE);
+                } else {
+                    ToastMaster.popToast(mContext, "获取投票详情失败");
+                }
+            }
+        });
     }
 
-    private void setData(int count, float range) {
-
-        float mult = range;
+    private void setData(int[] counts) {
+        int total = counts[0] + counts[1] + counts[2] + counts[3];
+        if (total == 0) {
+            return;
+        }
+//        float mult = range;
 
         ArrayList<PieEntry> entries = new ArrayList<PieEntry>();
 
         // NOTE: The order of the entries when being added to the entries array determines their position around the center of
         // the chart.
-        for (int i = 0; i < count; i++) {
-            entries.add(new PieEntry((float) (Math.random() * mult) + mult / 5, mParties[i % mParties.length]));
-        }
+        DecimalFormat df = new DecimalFormat("0.00");//格式化小数
+        entries.add(new PieEntry(Float.parseFloat(df.format(counts[0] / total)), mParties[0]));
+        entries.add(new PieEntry(Float.parseFloat(df.format(counts[1] / total)), mParties[1]));
+        entries.add(new PieEntry(Float.parseFloat(df.format(counts[2] / total)), mParties[2]));
+        entries.add(new PieEntry(Float.parseFloat(df.format(counts[3] / total)), mParties[3]));
 
         PieDataSet dataSet = new PieDataSet(entries, "Election Results");
         dataSet.setSliceSpace(3f);
@@ -193,7 +251,60 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
     }
 
     @OnClick(R.id.chart_detail_tv)
-    public void navToChartDetail(){
-        ChartDetailActivity.navToChartDetail(this,voteId);
+    public void navToChartDetail() {
+        ChartDetailActivity.navToChartDetail(this, voteId);
+    }
+
+    private String resultString = "";
+
+    @OnClick({R.id.reject_btn, R.id.giveup_btn, R.id.keep_btn, R.id.agree_btn})
+    public void onClick(View view) {
+        String resultCode = "";
+        switch (view.getId()) {
+            case R.id.reject_btn:
+                counts[1]++;
+                resultCode = "REJECT";
+                break;
+            case R.id.giveup_btn:
+                resultCode = "GIVEUP";
+                counts[3]++;
+                break;
+            case R.id.keep_btn:
+                counts[2]++;
+                resultCode = "KEEP";
+                break;
+            case R.id.agree_btn:
+                counts[0]++;
+                resultCode = "AGREE";
+                break;
+            default:
+                break;
+        }
+        resultString = ((Button) view).getText().toString();
+        DemoApiFactory.getInstance().createVoteRecord(resultCode, voteId).subscribe(new Subscriber<Boolean>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+                ToastMaster.popToast(mContext, "投票失败");
+            }
+
+            @Override
+            public void onNext(Boolean aBoolean) {
+                if (aBoolean.booleanValue()) {
+                    ToastMaster.popToast(mContext, "投票成功");
+                    btnsLl.setVisibility(View.GONE);
+                    voteResultTv.setVisibility(View.VISIBLE);
+                    voteResultTv.setText("已选择：" + resultString);
+                    setData(counts);
+                } else {
+                    ToastMaster.popToast(mContext, "投票失败");
+                }
+            }
+        });
     }
 }
