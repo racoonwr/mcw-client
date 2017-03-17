@@ -20,21 +20,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".demo.ui.activity.CreateMeetingActivity"
-            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".demo.ui.activity.SelectionViewActivity" />
-        <activity android:name=".demo.ui.activity.PreviewMeetingActivity" />
-        <activity android:name=".demo.ui.activity.MeetingDetailActivity" />
         <activity android:name=".demo.ui.activity.MyVoteActivity" />
         <activity android:name=".demo.ui.activity.VoteDetailActivity" />
         <activity android:name=".demo.ui.activity.CreateVoteActivity" />
         <activity android:name=".demo.ui.activity.ScanQRCodeActivity" />
         <activity android:name=".demo.ui.activity.ChartDetailActivity" />
         <activity android:name=".demo.ui.activity.ShowQRCodeActivity" />
-        <activity
-            android:name=".demo.ui.activity.UploadMeetingSummaryActivity"
-            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".demo.ui.activity.UserPickerActivity" />
         <activity
             android:name=".demo.ui.activity.MeetingActivity"

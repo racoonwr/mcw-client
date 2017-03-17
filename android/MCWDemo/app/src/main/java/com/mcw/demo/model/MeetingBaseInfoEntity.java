@@ -1,5 +1,7 @@
 package com.mcw.demo.model;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * 类描述
  * <p>
@@ -10,6 +12,22 @@ package com.mcw.demo.model;
  * @date 2017/3/9
  */
 public class MeetingBaseInfoEntity {
+
+    @Expose
+    private int type;
+    @Expose
+    private int modelType;
+    private String meetingId;
+    private String title;
+    private String location;
+    private String meetingRequire;
+    private long startDatePlan;
+    private long endDatePlan;
+    private String statusCode;
+    private String summaryInfoId;
+    private String createdBy;
+    private String creationDate;
+
     public int getType() {
         return type;
     }
@@ -18,14 +36,38 @@ public class MeetingBaseInfoEntity {
         this.type = type;
     }
 
-    private String meetingId;
-    private int type;
-    private String title;
-    private String location;
-    private String require;
-    private long startDatePlan;
-    private long endDatePlan;
-    private String statusCode;
+
+    public int getModelType() {
+        return modelType;
+    }
+
+    public void setModelType(int modelType) {
+        this.modelType = modelType;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getSummaryInfoId() {
+        return summaryInfoId;
+    }
+
+    public void setSummaryInfoId(String summaryInfoId) {
+        this.summaryInfoId = summaryInfoId;
+    }
+
+    public String getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(String creationDate) {
+        this.creationDate = creationDate;
+    }
 
     public String getMeetingId() {
         return meetingId;
@@ -51,12 +93,12 @@ public class MeetingBaseInfoEntity {
         this.location = location;
     }
 
-    public String getRequire() {
-        return require;
+    public String getMeetingRequire() {
+        return meetingRequire;
     }
 
-    public void setRequire(String require) {
-        this.require = require;
+    public void setMeetingRequire(String meetingRequire) {
+        this.meetingRequire = meetingRequire;
     }
 
     public long getStartDatePlan() {

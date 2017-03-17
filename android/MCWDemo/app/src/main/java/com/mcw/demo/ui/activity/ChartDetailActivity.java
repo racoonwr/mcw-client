@@ -215,7 +215,7 @@ public class ChartDetailActivity extends BaseActivity {
         keepAdapter.appendDatas(keepList);
     }
 
-    public static void navToChartDetail(Activity activity, int voteId) {
+    public static void navToChartDetail(Activity activity, String voteId) {
         Intent intent = new Intent(activity, ChartDetailActivity.class);
         intent.putExtra("voteId", voteId);
         activity.startActivity(intent);

@@ -56,27 +56,49 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <fr.ganfra.materialspinner.MaterialSpinner
-                            android:id="@+id/start_date_ms"
+                        <EditText
+                            android:id="@+id/plan_start_date_et"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="4.5"
-                            app:ms_arrowColor="#000000"
-                            app:ms_arrowSize="6dp"
-                            app:ms_enableFloatingLabel="false"
-                            app:ms_multiline="false"
-                            app:ms_thickness="0dp" />
+                            android:hint="年月日"
+                            android:textSize="10sp"
+                            android:clickable="true"
+                            android:editable="false"
+                            android:longClickable="false"/>
 
-                        <fr.ganfra.materialspinner.MaterialSpinner
-                            android:id="@+id/start_time_ms"
+                        <EditText
+                            android:id="@+id/plan_start_time_et"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="4.5"
-                            app:ms_arrowColor="#000000"
-                            app:ms_arrowSize="6dp"
-                            app:ms_enableFloatingLabel="false"
-                            app:ms_multiline="false"
-                            app:ms_thickness="0dp" />
+                            android:hint="时分"
+                            android:textSize="10sp"
+                            android:clickable="true"
+                            android:editable="false"
+                            android:longClickable="false"/>
+
+                        <!--<fr.ganfra.materialspinner.MaterialSpinner-->
+                            <!--android:id="@+id/start_date_ms"-->
+                            <!--android:layout_width="0dp"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="4.5"-->
+                            <!--app:ms_arrowColor="#000000"-->
+                            <!--app:ms_arrowSize="6dp"-->
+                            <!--app:ms_enableFloatingLabel="false"-->
+                            <!--app:ms_multiline="false"-->
+                            <!--app:ms_thickness="0dp" />-->
+
+                        <!--<fr.ganfra.materialspinner.MaterialSpinner-->
+                            <!--android:id="@+id/start_time_ms"-->
+                            <!--android:layout_width="0dp"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="4.5"-->
+                            <!--app:ms_arrowColor="#000000"-->
+                            <!--app:ms_arrowSize="6dp"-->
+                            <!--app:ms_enableFloatingLabel="false"-->
+                            <!--app:ms_multiline="false"-->
+                            <!--app:ms_thickness="0dp" />-->
                     </LinearLayout>
                 </LinearLayout>
 
@@ -106,27 +128,49 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <fr.ganfra.materialspinner.MaterialSpinner
-                            android:id="@+id/end_date_ms"
+                        <EditText
+                            android:id="@+id/plan_end_date_et"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="4.5"
-                            app:ms_arrowColor="#000000"
-                            app:ms_arrowSize="6dp"
-                            app:ms_enableFloatingLabel="false"
-                            app:ms_multiline="false"
-                            app:ms_thickness="0dp" />
+                            android:hint="年月日"
+                            android:textSize="10sp"
+                            android:clickable="true"
+                            android:editable="false"
+                            android:longClickable="false"/>
 
-                        <fr.ganfra.materialspinner.MaterialSpinner
-                            android:id="@+id/end_time_ms"
+                        <EditText
+                            android:id="@+id/plan_end_time_et"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="4.5"
-                            app:ms_arrowColor="#000000"
-                            app:ms_arrowSize="6dp"
-                            app:ms_enableFloatingLabel="false"
-                            app:ms_multiline="false"
-                            app:ms_thickness="0dp" />
+                            android:hint="时分"
+                            android:textSize="10sp"
+                            android:clickable="true"
+                            android:editable="false"
+                            android:longClickable="false"/>
+
+                        <!--<fr.ganfra.materialspinner.MaterialSpinner-->
+                            <!--android:id="@+id/end_date_ms"-->
+                            <!--android:layout_width="0dp"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="4.5"-->
+                            <!--app:ms_arrowColor="#000000"-->
+                            <!--app:ms_arrowSize="6dp"-->
+                            <!--app:ms_enableFloatingLabel="false"-->
+                            <!--app:ms_multiline="false"-->
+                            <!--app:ms_thickness="0dp" />-->
+
+                        <!--<fr.ganfra.materialspinner.MaterialSpinner-->
+                            <!--android:id="@+id/end_time_ms"-->
+                            <!--android:layout_width="0dp"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="4.5"-->
+                            <!--app:ms_arrowColor="#000000"-->
+                            <!--app:ms_arrowSize="6dp"-->
+                            <!--app:ms_enableFloatingLabel="false"-->
+                            <!--app:ms_multiline="false"-->
+                            <!--app:ms_thickness="0dp" />-->
                     </LinearLayout>
 
                 </LinearLayout>

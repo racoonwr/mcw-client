@@ -3,6 +3,8 @@ package com.mcw.demo.ui.adapter.bean;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -13,9 +15,12 @@ import com.igeek.hfrecyleviewlib.HFGridSpanSizeLookup;
 import com.igeek.hfrecyleviewlib.HFGridVerDecoration;
 import com.mcw.R;
 import com.mcw.demo.model.SummaryInfoEntity;
+import com.mcw.demo.ui.activity.MeetingActivity;
 import com.mcw.demo.ui.adapter.PeopleSelectRecyclerViewAdapter;
+import com.mcw.demo.util.DateUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,16 +37,18 @@ import cn.bingoogolapple.photopicker.widget.BGASortableNinePhotoLayout;
  */
 public class SummaryInfoType extends BaseHolderType<SummaryInfoEntity, SummaryInfoType.Viewholder> implements BGASortableNinePhotoLayout.Delegate {
     private NinePhotoLayoutListener listener;
+    private View.OnTouchListener customTimeEditViewOnTouchListener;
     private BGASortableNinePhotoLayout mPicSnpl;
 
-    public SummaryInfoType(NinePhotoLayoutListener listener) {
+    public SummaryInfoType(NinePhotoLayoutListener listener, View.OnTouchListener onTouchListener) {
         this.listener = listener;
+        this.customTimeEditViewOnTouchListener = onTouchListener;
     }
 
 
     @Override
     public BasicRecyViewHolder buildHolder(ViewGroup parent) {
-        return new Viewholder(View.inflate(parent.getContext(), R.layout.activity_upload_meeting_summary, null));
+        return new Viewholder(View.inflate(parent.getContext(), R.layout.layout_upload_meeting_summary, null));
     }
 
     @Override
@@ -50,7 +57,67 @@ public class SummaryInfoType extends BaseHolderType<SummaryInfoEntity, SummaryIn
     }
 
     @Override
-    public void bindDataToHolder(Viewholder viewholder, SummaryInfoEntity summaryInfoEntity, int postion) {
+    public void bindDataToHolder(Viewholder viewholder, final SummaryInfoEntity summaryInfoEntity, int postion) {
+        if (summaryInfoEntity.getModelType() != MeetingActivity.MODEL_TYPE_INPUT_SUMMARY) {
+            viewholder.meetingCompereEt.setEnabled(false);
+            viewholder.meetingRecorderEt.setEnabled(false);
+            viewholder.realStartDateEt.setOnTouchListener(null);
+            viewholder.realStartTimeEt.setOnTouchListener(null);
+            viewholder.realEndDateEt.setOnTouchListener(null);
+            viewholder.realEndTimeEt.setOnTouchListener(null);
+            viewholder.snplMeetingContentAddPic.setPlusEnable(false);
+            viewholder.snplMeetingContentAddPic.setEditable(false);
+            viewholder.snplMeetingContentAddPic.setSortable(false);
+        } else {
+            viewholder.meetingCompereEt.setEnabled(true);
+            viewholder.meetingRecorderEt.setEnabled(true);
+            viewholder.realStartDateEt.setOnTouchListener(customTimeEditViewOnTouchListener);
+            viewholder.realStartTimeEt.setOnTouchListener(customTimeEditViewOnTouchListener);
+            viewholder.realEndDateEt.setOnTouchListener(customTimeEditViewOnTouchListener);
+            viewholder.realEndTimeEt.setOnTouchListener(customTimeEditViewOnTouchListener);
+            viewholder.snplMeetingContentAddPic.setPlusEnable(true);
+            viewholder.snplMeetingContentAddPic.setEditable(true);
+            viewholder.snplMeetingContentAddPic.setSortable(true);
+        }
+
+
+        viewholder.meetingCompereEt.setText(summaryInfoEntity.getMeetingCompere());
+        viewholder.meetingCompereEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                summaryInfoEntity.setMeetingCompere(s.toString());
+            }
+        });
+
+        viewholder.meetingRecorderEt.setText(summaryInfoEntity.getMeetingRecorder());
+        viewholder.meetingRecorderEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                summaryInfoEntity.setMeetingRecorder(s.toString());
+            }
+        });
+
+
         mPicSnpl = viewholder.snplMeetingContentAddPic;
         PeopleSelectRecyclerViewAdapter adapter = new PeopleSelectRecyclerViewAdapter();
         viewholder.peopleSelectRv.addItemDecoration(new HFGridVerDecoration());
@@ -62,14 +129,34 @@ public class SummaryInfoType extends BaseHolderType<SummaryInfoEntity, SummaryIn
         spanSizeLookup.setLayoutManager(manager);
         manager.setSpanSizeLookup(spanSizeLookup);
         viewholder.peopleSelectRv.setLayoutManager(manager);
-        adapter.refreshDatas(summaryInfoEntity.getInvitedUsers());
+        adapter.refreshDatas(summaryInfoEntity.getInvitedUsersList());
 
         viewholder.snplMeetingContentAddPic.setMaxItemCount(9);
-        viewholder.snplMeetingContentAddPic.setEditable(true);
-        viewholder.snplMeetingContentAddPic.setPlusEnable(true);
-        viewholder.snplMeetingContentAddPic.setSortable(true);
         viewholder.snplMeetingContentAddPic.setDelegate(this);
-//        viewholder.snplMeetingContentAddPic.setData(summaryInfoEntity.getMeetingPics());
+//        viewholder.snplMeetingContentAddPic.setData(summaryInfoEntity.getMeetingPicsList());
+
+        long realStartDate = summaryInfoEntity.getRealStartDate();
+        if (realStartDate == 0l) {
+            Calendar now = Calendar.getInstance();
+            now.set(Calendar.SECOND, 0);
+            realStartDate = now.getTimeInMillis();
+            summaryInfoEntity.setRealStartDate(realStartDate);
+        }
+        viewholder.realStartDateEt.setText(DateUtil.translateDate(realStartDate, DateUtil.yyyyMMDD));
+        viewholder.realStartTimeEt.setText(DateUtil.translateDate(realStartDate, DateUtil.HHmm));
+
+        long realEndDate = summaryInfoEntity.getRealEndDate();
+        if (realStartDate > realEndDate) {
+            realEndDate = realStartDate;
+        }
+        if (realEndDate == 0l) {
+            Calendar now = Calendar.getInstance();
+            now.set(Calendar.SECOND, 0);
+            realEndDate = now.getTimeInMillis();
+            summaryInfoEntity.setRealEndDate(realEndDate);
+        }
+        viewholder.realEndDateEt.setText(DateUtil.translateDate(realEndDate, DateUtil.yyyyMMDD));
+        viewholder.realEndTimeEt.setText(DateUtil.translateDate(realEndDate, DateUtil.HHmm));
     }
 
     @Override
@@ -79,12 +166,12 @@ public class SummaryInfoType extends BaseHolderType<SummaryInfoEntity, SummaryIn
 
     @Override
     public void onClickDeleteNinePhotoItem(BGASortableNinePhotoLayout sortableNinePhotoLayout, View view, int position, String model, ArrayList<String> models) {
-        listener.onItemDelete(mPicSnpl,position);
+        listener.onItemDelete(mPicSnpl, position);
     }
 
     @Override
     public void onClickNinePhotoItem(BGASortableNinePhotoLayout sortableNinePhotoLayout, View view, int position, String model, ArrayList<String> models) {
-        listener.onItemClick(mPicSnpl,position,model,models);
+        listener.onItemClick(mPicSnpl, position, model, models);
     }
 
     public static class Viewholder extends BasicRecyViewHolder {
@@ -116,9 +203,9 @@ public class SummaryInfoType extends BaseHolderType<SummaryInfoEntity, SummaryIn
     }
 
     public interface NinePhotoLayoutListener {
-        void onItemDelete(BGASortableNinePhotoLayout layout,int position);
+        void onItemDelete(BGASortableNinePhotoLayout layout, int position);
 
-        void onItemClick(BGASortableNinePhotoLayout layout,int position, String model, ArrayList<String> models);
+        void onItemClick(BGASortableNinePhotoLayout layout, int position, String model, ArrayList<String> models);
 
         void onItemAdd(BGASortableNinePhotoLayout layout);
     }

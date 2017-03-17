@@ -13,9 +13,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
 import com.igeek.hfrecyleviewlib.BasicRecyViewHolder;
 import com.igeek.hfrecyleviewlib.RecycleScrollListener;
 import com.mcw.R;
+import com.mcw.demo.model.MeetingBaseInfoEntity;
 import com.mcw.demo.model.MeetingListItemEntity;
 import com.mcw.demo.presenter.MeetingFragmentPresenter;
 import com.mcw.demo.ui.activity.MeetingActivity;
@@ -163,8 +165,8 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
 
     @Override
     public void OnItemClick(View v, int adapterPosition) {
-        MeetingActivity.navToViewMeetingDetail(getActivity(), adapter.getData(adapterPosition).getMeetingId(),
-                adapter.getData(adapterPosition).getCreatedBy());
+        MeetingListItemEntity entity = adapter.getData(adapterPosition);
+        MeetingActivity.navToViewMeetingDetail(getActivity(),entity.getMeetingId(),entity.getCreatedBy(),entity.getStatusCode());
     }
 
     @Override
@@ -190,13 +192,16 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
                 @Override
                 public void onNext(ActivityResult activityResult) {
                     if (activityResult.isOk()) {
+                        String meetingInfo = activityResult.getData().getStringExtra("meetingInfo");
+                        MeetingBaseInfoEntity tmp = new Gson().fromJson(meetingInfo,MeetingBaseInfoEntity.class);
                         MeetingListItemEntity entity = new MeetingListItemEntity();
-                        entity.setStartDatePlan(1111111l);
-                        entity.setEndDatePlan(1111111l);
-                        entity.setMeetingId("5");
-                        entity.setLocation("会议室2");
-                        entity.setStatusCode("1");
-                        entity.setCreatedBy("1");
+                        entity.setStartDatePlan(tmp.getStartDatePlan());
+                        entity.setEndDatePlan(tmp.getEndDatePlan());
+                        entity.setMeetingId(tmp.getMeetingId());
+                        entity.setLocation(tmp.getLocation());
+                        entity.setStatusCode(tmp.getStatusCode());
+                        entity.setCreatedBy(tmp.getCreatedBy());
+                        entity.setTitle(tmp.getTitle());
                         adapter.insertData(0, entity);
                         meetingListRv.smoothScrollToPosition(0);
                     }

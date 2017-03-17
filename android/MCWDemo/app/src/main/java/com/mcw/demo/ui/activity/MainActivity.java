@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.AppBaseTheme_Light);
+//        setTheme(R.style.AppBaseTheme_Light);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initView();

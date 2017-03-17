@@ -60,7 +60,7 @@ public class ShowQRCodeActivity extends BaseActivity {
         return QRCodeEncoder.syncEncodeQRCode(""+1, BGAQRCodeUtil.dp2px(this,200));
     }
 
-    public static void navToShowQRCode(Activity activity,int meetingId){
+    public static void navToShowQRCode(Activity activity,String meetingId){
         Intent intent = new Intent(activity,ShowQRCodeActivity.class);
         intent.putExtra("meetingId",meetingId);
         activity.startActivity(intent);

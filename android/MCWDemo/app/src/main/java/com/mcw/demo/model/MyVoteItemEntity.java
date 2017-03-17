@@ -12,33 +12,34 @@ import java.io.Serializable;
  * @date 2017/3/6
  */
 public class MyVoteItemEntity implements Serializable{
-    private String voteTitle;
-    private int voteId;
-    private int voteStatus;
+    private String voteContent;
+    private String voteId;
+    private String statusCode;
     private String voteCreatorName;
+    private int anonymity;
 
-    public String getVoteTitle() {
-        return voteTitle;
+    public String getVoteContent() {
+        return voteContent;
     }
 
-    public void setVoteTitle(String voteTitle) {
-        this.voteTitle = voteTitle;
+    public void setVoteContent(String voteContent) {
+        this.voteContent = voteContent;
     }
 
-    public int getVoteId() {
+    public String getVoteId() {
         return voteId;
     }
 
-    public void setVoteId(int voteId) {
+    public void setVoteId(String voteId) {
         this.voteId = voteId;
     }
 
-    public int getVoteStatus() {
-        return voteStatus;
+    public String getStatusCode() {
+        return statusCode;
     }
 
-    public void setVoteStatus(int voteStatus) {
-        this.voteStatus = voteStatus;
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
     }
 
     public String getVoteCreatorName() {
@@ -47,5 +48,13 @@ public class MyVoteItemEntity implements Serializable{
 
     public void setVoteCreatorName(String voteCreatorName) {
         this.voteCreatorName = voteCreatorName;
+    }
+
+    public int isAnonymity() {
+        return anonymity;
+    }
+
+    public void setAnonymity(int anonymity) {
+        this.anonymity = anonymity;
     }
 }

@@ -31,14 +31,14 @@ public class MyVoteRecyclerViewAdapter extends HFSingleTypeRecyAdapter<MyVoteIte
 
     @Override
     public void bindDataToHolder(MyVoteRecyclerViewAdapter.RecyViewHolder holder, MyVoteItemEntity myVoteItemEntity, int position) {
-        holder.voteTitle.setText(myVoteItemEntity.getVoteTitle());
-        holder.voteCreatorName.setText(holder.voteCreatorName.getText().toString().replaceFirst("@",myVoteItemEntity.getVoteCreatorName()));
-        if (myVoteItemEntity.getVoteStatus() == 1){
+        holder.voteTitle.setText(myVoteItemEntity.getVoteContent());
+//        holder.voteCreatorName.setText(holder.voteCreatorName.getText().toString().replaceFirst("@",myVoteItemEntity.getVoteCreatorName()));
+        if ("INVOTING".equals(myVoteItemEntity.getStatusCode())){
             holder.toVoteDetailIv.setImageResource(R.drawable.vote_icon_unfinished);
         }else{
             holder.toVoteDetailIv.setImageResource(R.drawable.vote_icon_finished);
         }
-        holder.voteStatus.setText(""+myVoteItemEntity.getVoteStatus());
+        holder.voteStatus.setText(myVoteItemEntity.getStatusCode());
         holder.toVoteDetailIv.setTag(myVoteItemEntity.getVoteId());
     }
 

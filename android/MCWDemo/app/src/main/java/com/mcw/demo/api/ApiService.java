@@ -3,6 +3,9 @@ package com.mcw.demo.api;
 import com.mcw.demo.api.response.ApiResponse;
 import com.mcw.demo.model.MeetingBaseInfoEntity;
 import com.mcw.demo.model.MeetingListItemEntity;
+import com.mcw.demo.model.MyVoteItemEntity;
+import com.mcw.demo.model.SelectedUserEntity;
+import com.mcw.demo.model.SummaryInfoEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +15,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 import rx.Observable;
 
 /**
@@ -25,6 +27,16 @@ import rx.Observable;
  * @date 2017/3/1
  */
 public interface ApiService {
+
+    /**
+     * 获取与会人员
+     *
+     * @return
+     */
+    @GET("user/all")
+    @Headers("Content-Type:" + RetrofitClient.JSON)
+    Observable<ApiResponse<List<SelectedUserEntity>>> getAllUser();
+
     /**
      * 获取会议列表
      *
@@ -53,13 +65,54 @@ public interface ApiService {
     @Headers("Content-Type:" + RetrofitClient.JSON)
     Observable<ApiResponse<List<MeetingBaseInfoEntity>>> getMeetingBaseInfo(@Path("meetingId") String meetingId);
 
+    /**
+     * 开始会议
+     *
+     * @param params
+     * @return
+     */
+    @POST("meeting/start")
+    @Headers("Content-Type:" + RetrofitClient.JSON)
+    Observable<ApiResponse<Boolean>> startMeeting(@Body Map params);
 
     /**
-     * 获取会议纪要信息
+     * 结束会议
+     *
+     * @param params
+     * @return
+     */
+    @POST("meeting/end")
+    @Headers("Content-Type:" + RetrofitClient.JSON)
+    Observable<ApiResponse<Boolean>> endMeeting(@Body Map params);
+
+
+
+    /**
+     * 获取会议列表
      *
      * @return
      */
-    @POST("gw/oauthentry/game.timeball.push/1/insert")
+    @GET("vote/list/{meetingId}")
     @Headers("Content-Type:" + RetrofitClient.JSON)
-    Observable<ApiResponse<Integer>> getSummaryInfo(@Body Map params, @Query("access_token") String token);
+    Observable<ApiResponse<List<MyVoteItemEntity>>> getVoteList(@Path("meetingId") String meetingId);
+
+    /**
+     * 创建会议纪要
+     *
+     * @param params
+     * @return
+     */
+    @POST("summary/create")
+    @Headers("Content-Type:" + RetrofitClient.JSON)
+    Observable<ApiResponse<Boolean>> createSummary(@Body Map params);
+
+    /**
+     * 获取会议基础信息
+     *
+     * @return
+     */
+    @GET("summary/detail/{summaryInfoId}")
+    @Headers("Content-Type:" + RetrofitClient.JSON)
+    Observable<ApiResponse<List<SummaryInfoEntity>>> getSummaryInfo(@Path("summaryInfoId") String summaryInfoId);
+
 }

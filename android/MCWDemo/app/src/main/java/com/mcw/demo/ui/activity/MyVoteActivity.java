@@ -1,5 +1,7 @@
 package com.mcw.demo.ui.activity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,13 +13,17 @@ import android.view.View;
 import com.igeek.hfrecyleviewlib.BasicRecyViewHolder;
 import com.igeek.hfrecyleviewlib.HFLineVerComDecoration;
 import com.mcw.R;
+import com.mcw.demo.api.DemoApiFactory;
 import com.mcw.demo.model.MyVoteItemEntity;
 import com.mcw.demo.ui.adapter.MyVoteRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Subscriber;
+
 public class MyVoteActivity extends BaseActivity implements BasicRecyViewHolder.OnItemClickListener {
+    private String meetingId;
     private RecyclerView myVoteRv;
     private SwipeRefreshLayout myVoteSrl;
     private MyVoteRecyclerViewAdapter adapter;
@@ -31,6 +37,7 @@ public class MyVoteActivity extends BaseActivity implements BasicRecyViewHolder.
     @Override
     protected void initResource(Bundle savedInstanceState) {
         setTitle("我的投票");
+        meetingId = getIntent().getStringExtra("meetingId");
         myVoteRv = (RecyclerView) findViewById(R.id.my_vote_list_rv);
         myVoteSrl = (SwipeRefreshLayout) findViewById(R.id.my_vote_srl);
         if (adapter == null) {
@@ -39,28 +46,16 @@ public class MyVoteActivity extends BaseActivity implements BasicRecyViewHolder.
             adapter.addSubViewListener(R.id.to_vote_detail_iv, new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    VoteDetailActivity.navToVoteDetail(MyVoteActivity.this, Integer.parseInt(view.getTag().toString()));
+                    VoteDetailActivity.navToVoteDetail(MyVoteActivity.this, view.getTag().toString());
                 }
             });
             votes = new ArrayList<>();
-            MyVoteItemEntity entity = new MyVoteItemEntity();
-            entity.setVoteCreatorName("z1");
-            entity.setVoteId(1);
-            entity.setVoteStatus(1);
-            entity.setVoteTitle("投票1");
-            votes.add(entity);
-            entity = new MyVoteItemEntity();
-            entity.setVoteCreatorName("z2");
-            entity.setVoteId(2);
-            entity.setVoteStatus(2);
-            entity.setVoteTitle("投票2");
-            votes.add(entity);
+            adapter.refreshDatas(votes);
         }
         myVoteRv.setAdapter(adapter);
         myVoteRv.setItemAnimator(new DefaultItemAnimator());
         myVoteRv.addItemDecoration(new HFLineVerComDecoration(1, Color.parseColor("#efefef")));
         myVoteRv.setLayoutManager(new LinearLayoutManager(this));
-        adapter.refreshDatas(votes);
         myVoteSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -68,10 +63,37 @@ public class MyVoteActivity extends BaseActivity implements BasicRecyViewHolder.
             }
         });
 
+        DemoApiFactory.getInstance().getVoteList("sss").subscribe(new Subscriber<List<MyVoteItemEntity>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+                myVoteSrl.setRefreshing(false);
+            }
+
+            @Override
+            public void onNext(List<MyVoteItemEntity> myVoteItemEntities) {
+                myVoteSrl.setRefreshing(false);
+                if (myVoteItemEntities != null && myVoteItemEntities.size() > 0) {
+                    votes.addAll(myVoteItemEntities);
+                    adapter.refreshDatas(votes);
+                }
+            }
+        });
     }
 
     @Override
     public void OnItemClick(View v, int adapterPosition) {
         VoteDetailActivity.navToVoteDetail(MyVoteActivity.this, adapter.getData(adapterPosition).getVoteId());
+    }
+
+    public static void navToMyVote(Activity activity, String meetingId) {
+        Intent i = new Intent(activity, MyVoteActivity.class);
+        i.putExtra("meetingId", meetingId);
+        activity.startActivity(i);
     }
 }

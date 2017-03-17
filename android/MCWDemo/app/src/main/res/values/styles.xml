@@ -139,6 +139,7 @@
         <item name="android:paddingLeft">5dp</item>
         <item name="android:paddingTop">5dp</item>
         <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/textColorSecondary</item>
     </style>
 
     <style name="detail_item_content">
@@ -147,6 +148,7 @@
         <item name="android:background">#ffffff</item>
         <item name="android:padding">7dp</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/textColor</item>
     </style>
 
 </resources>

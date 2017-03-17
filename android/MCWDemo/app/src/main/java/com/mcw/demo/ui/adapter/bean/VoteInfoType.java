@@ -1,5 +1,6 @@
 package com.mcw.demo.ui.adapter.bean;
 
+import android.graphics.Color;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.widget.Button;
 
 import com.igeek.hfrecyleviewlib.BaseHolderType;
 import com.igeek.hfrecyleviewlib.BasicRecyViewHolder;
+import com.igeek.hfrecyleviewlib.HFLineVerComDecoration;
 import com.mcw.R;
 import com.mcw.demo.model.VoteInfoEntity;
 import com.mcw.demo.ui.adapter.MyVoteRecyclerViewAdapter;
@@ -27,6 +29,9 @@ import butterknife.ButterKnife;
  */
 public class VoteInfoType extends BaseHolderType<VoteInfoEntity, VoteInfoType.Viewholder> {
 
+    public VoteInfoType() {
+    }
+
     @Override
     public BasicRecyViewHolder buildHolder(ViewGroup parent) {
         return new Viewholder(View.inflate(parent.getContext(), R.layout.layout_vote_info, null));
@@ -41,6 +46,7 @@ public class VoteInfoType extends BaseHolderType<VoteInfoEntity, VoteInfoType.Vi
     public void bindDataToHolder(Viewholder viewholder, VoteInfoEntity voteInfoEntity, int postion) {
         MyVoteRecyclerViewAdapter voteAdapter = new MyVoteRecyclerViewAdapter();
         viewholder.voteListRv.setItemAnimator(new DefaultItemAnimator());
+        viewholder.voteListRv.addItemDecoration(new HFLineVerComDecoration(1, Color.parseColor("#efefef")));
         viewholder.voteListRv.setLayoutManager(new LinearLayoutManager(viewholder.itemView.getContext()));
         viewholder.voteListRv.setAdapter(voteAdapter);
         voteAdapter.refreshDatas(voteInfoEntity.getList());

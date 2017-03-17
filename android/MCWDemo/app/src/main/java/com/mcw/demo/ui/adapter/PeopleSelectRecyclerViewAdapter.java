@@ -30,7 +30,7 @@ public class PeopleSelectRecyclerViewAdapter extends HFSingleTypeRecyAdapter<Sel
         addEntity.setName("");
         addEntity.setPhone("");
         addEntity.setPhotoUrl("");
-        addEntity.setUserId(-1);
+        addEntity.setUserId("11");
         appendData(addEntity);
     }
 
@@ -43,7 +43,7 @@ public class PeopleSelectRecyclerViewAdapter extends HFSingleTypeRecyAdapter<Sel
     @Override
     public void bindDataToHolder(PeopleSelectRecyclerViewAdapter.RecyViewHolder holder, SelectedUserEntity entity, int position) {
         holder.name.setText(entity.getName());
-        Glide.with(DemoApplication.getInstance().getApplicationContext()).load(R.drawable.add_people).into(holder.photo);
+        Glide.with(DemoApplication.getInstance().getApplicationContext()).load(entity.getPhotoUrl()).into(holder.photo);
         holder.deleteIcon.setTag(position);
         if (entity.isPreview()) {
             holder.deleteIcon.setVisibility(View.GONE);

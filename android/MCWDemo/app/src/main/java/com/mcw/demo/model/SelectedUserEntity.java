@@ -1,5 +1,7 @@
 package com.mcw.demo.model;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * 类描述
  * <p>
@@ -11,14 +13,25 @@ package com.mcw.demo.model;
  */
 public class SelectedUserEntity {
 
-    private int userId;
+    private String userId;
     private String name;
     private String phone;
     private String photoUrl;
+    private String gender;
+
+    @Expose
     private boolean isPreview;
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
     public SelectedUserEntity() {
-        this.isPreview = false;
+        this.isPreview = true;
     }
 
     public boolean isPreview() {
@@ -29,11 +42,11 @@ public class SelectedUserEntity {
         isPreview = preview;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

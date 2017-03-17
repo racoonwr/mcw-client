@@ -1,5 +1,7 @@
 package com.mcw.demo.model;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.List;
 
 /**
@@ -12,13 +14,53 @@ import java.util.List;
  * @date 2017/3/10
  */
 public class SummaryInfoEntity {
+    @Expose
     private int type;
-    private String meetingCompere;
-    private String meetingRecorder;
+    @Expose
+    private int modelType;
+    private String summaryInfoId;
     private long realStartDate;
     private long realEndDate;
-    private List<Object> meetingPics;
-    private List<SelectedUserEntity> invitedUsers;
+    private String meetingCompere;
+    private String meetingRecorder;
+    private String invitedUsers;
+    private String meetingPics;
+    @Expose
+    private List<Object> meetingPicsList;
+    @Expose
+    private List<SelectedUserEntity> invitedUsersList;
+
+    public int getModelType() {
+        return modelType;
+    }
+
+    public void setModelType(int modelType) {
+        this.modelType = modelType;
+    }
+
+    public String getSummaryInfoId() {
+        return summaryInfoId;
+    }
+
+    public void setSummaryInfoId(String summaryInfoId) {
+        this.summaryInfoId = summaryInfoId;
+    }
+
+    public String getInvitedUsers() {
+        return invitedUsers;
+    }
+
+    public void setInvitedUsers(String invitedUsers) {
+        this.invitedUsers = invitedUsers;
+    }
+
+    public String getMeetingPics() {
+        return meetingPics;
+    }
+
+    public void setMeetingPics(String meetingPics) {
+        this.meetingPics = meetingPics;
+    }
 
     public int getType() {
         return type;
@@ -60,19 +102,19 @@ public class SummaryInfoEntity {
         this.realEndDate = realEndDate;
     }
 
-    public List<Object> getMeetingPics() {
-        return meetingPics;
+    public List<Object> getMeetingPicsList() {
+        return meetingPicsList;
     }
 
-    public void setMeetingPics(List<Object> meetingPics) {
-        this.meetingPics = meetingPics;
+    public void setMeetingPicsList(List<Object> meetingPicsList) {
+        this.meetingPicsList = meetingPicsList;
     }
 
-    public List<SelectedUserEntity> getInvitedUsers() {
-        return invitedUsers;
+    public List<SelectedUserEntity> getInvitedUsersList() {
+        return invitedUsersList;
     }
 
-    public void setInvitedUsers(List<SelectedUserEntity> invitedUsers) {
-        this.invitedUsers = invitedUsers;
+    public void setInvitedUsersList(List<SelectedUserEntity> invitedUsersList) {
+        this.invitedUsersList = invitedUsersList;
     }
 }

@@ -7,6 +7,7 @@ import com.igeek.hfrecyleviewlib.BasicRecyViewHolder;
 import com.igeek.hfrecyleviewlib.HFSingleTypeRecyAdapter;
 import com.mcw.R;
 import com.mcw.demo.model.MeetingListItemEntity;
+import com.mcw.demo.model.UserInfo;
 
 /**
  * 类描述
@@ -35,7 +36,8 @@ public class MeetingListRecyclerViewAdapter extends HFSingleTypeRecyAdapter<Meet
         holder.meetingTitle.setText(entity.getTitle());
         holder.meetingTime.setText("" + entity.getStartDatePlan());
         holder.meetingLocation.setText(entity.getLocation());
-        holder.meetingStatus.setText("" + entity.getStatusCode());
+        boolean mine = entity.getCreatedBy().equals(UserInfo.getInstance().getId());
+        holder.meetingStatus.setText(entity.getStatusCode() + (mine?"mine":""));
     }
 
     public static class RecyViewHolder extends BasicRecyViewHolder {

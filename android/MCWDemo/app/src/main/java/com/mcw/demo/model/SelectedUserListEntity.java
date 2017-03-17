@@ -14,7 +14,6 @@ import java.util.List;
 public class SelectedUserListEntity {
     private int type;
     private List<SelectedUserEntity> list;
-
     public List<SelectedUserEntity> getList() {
         return list;
     }

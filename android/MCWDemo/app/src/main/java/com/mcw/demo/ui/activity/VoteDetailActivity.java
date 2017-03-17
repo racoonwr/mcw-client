@@ -31,7 +31,7 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
             "同意", "反对", "保留", "弃权"
     };
 
-    private int voteId;
+    private String voteId;
     private Typeface tf;
 
     @BindView(R.id.vote_chart)
@@ -52,7 +52,7 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
     protected void initResource(Bundle savedInstanceState) {
         ButterKnife.bind(this);
         setTitle("投票详情");
-        voteId = getIntent().getIntExtra("voteId", 0);
+        voteId = getIntent().getStringExtra("voteId");
         voteContextTv.setText(""+voteId);
 
 
@@ -176,7 +176,7 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
 //        return s;
 //    }
 
-    public static void navToVoteDetail(Activity activity, int voteId) {
+    public static void navToVoteDetail(Activity activity, String voteId) {
         Intent toDetail = new Intent(activity, VoteDetailActivity.class);
         toDetail.putExtra("voteId", voteId);
         activity.startActivity(toDetail);
