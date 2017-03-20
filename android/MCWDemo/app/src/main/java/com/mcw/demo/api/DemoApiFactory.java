@@ -36,8 +36,8 @@ public class DemoApiFactory extends ApiFactory {
         return mInstance;
     }
 
-    public Observable<List<MeetingListItemEntity>> getMeetingList(String userId) {
-        return apiService.getMeetingList(userId).map(new HttpResultFunc<List<MeetingListItemEntity>>()).compose(SchedulersCompat.<List<MeetingListItemEntity>>applyExecutorSchedulers());
+    public Observable<List<MeetingListItemEntity>> getMeetingList(String userId, int pageNo, int pageSize) {
+        return apiService.getMeetingList(userId, pageNo, pageSize).map(new HttpResultFunc<List<MeetingListItemEntity>>()).compose(SchedulersCompat.<List<MeetingListItemEntity>>applyExecutorSchedulers());
     }
 
     public Observable<Boolean> createMeeting(MeetingBaseInfoEntity entity) {
@@ -98,7 +98,7 @@ public class DemoApiFactory extends ApiFactory {
         return apiService.getSummaryInfo(summaryInfoId).map(new HttpResultFunc<List<SummaryInfoEntity>>()).compose(SchedulersCompat.<List<SummaryInfoEntity>>applyExecutorSchedulers());
     }
 
-    public Observable<Boolean> createVoteList(String meetingId,List<MyVoteItemEntity> list) {
+    public Observable<Boolean> createVoteList(String meetingId, List<MyVoteItemEntity> list) {
         Map<String, Object> map = new HashMap<>();
         map.put("meetingId", meetingId);
         map.put("list", list);
@@ -106,10 +106,10 @@ public class DemoApiFactory extends ApiFactory {
     }
 
     public Observable<List<VoteDetailEntity>> getVoteDetail(String voteId) {
-        return apiService.getVoteDetail(voteId,UserInfo.getInstance().getId()).map(new HttpResultFunc<List<VoteDetailEntity>>()).compose(SchedulersCompat.<List<VoteDetailEntity>>applyExecutorSchedulers());
+        return apiService.getVoteDetail(voteId, UserInfo.getInstance().getId()).map(new HttpResultFunc<List<VoteDetailEntity>>()).compose(SchedulersCompat.<List<VoteDetailEntity>>applyExecutorSchedulers());
     }
 
-    public Observable<Boolean> createVoteRecord(String resultCode,String voteId) {
+    public Observable<Boolean> createVoteRecord(String resultCode, String voteId) {
         Map<String, Object> map = new HashMap<>();
         map.put("resultCode", resultCode);
         map.put("recordId", UUID.randomUUID().toString());
@@ -118,14 +118,24 @@ public class DemoApiFactory extends ApiFactory {
         return apiService.createVoteRecord(map).map(new HttpResultFunc<Boolean>()).compose(SchedulersCompat.<Boolean>applyExecutorSchedulers());
     }
 
-    public Observable<Boolean> createVote(String meetingId,MyVoteItemEntity entity) {
+    public Observable<Boolean> createVote(String meetingId, MyVoteItemEntity entity) {
         Map<String, Object> map = new HashMap<>();
         map.put("voteId", entity.getVoteId());
-        map.put("meetingId",meetingId);
+        map.put("meetingId", meetingId);
         map.put("voteContent", entity.getVoteContent());
         map.put("anonymity", entity.getAnonymity());
         map.put("userId", UserInfo.getInstance().getId());
         return apiService.createVote(map).map(new HttpResultFunc<Boolean>()).compose(SchedulersCompat.<Boolean>applyExecutorSchedulers());
     }
+
+    public Observable<Boolean> meetingSign(String meetingId, String userId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("signId", UUID.randomUUID().toString());
+        map.put("meetingId", meetingId);
+        map.put("userId", userId);
+        map.put("createdBy", UserInfo.getInstance().getId());
+        return apiService.meetingSign(map).map(new HttpResultFunc<Boolean>()).compose(SchedulersCompat.<Boolean>applyExecutorSchedulers());
+    }
+
 
 }

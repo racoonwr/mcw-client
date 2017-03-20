@@ -21,17 +21,13 @@ import com.mcw.demo.model.SelectedUserEntity;
  * @date 2017/3/1
  */
 public class PeopleSelectRecyclerViewAdapter extends HFSingleTypeRecyAdapter<SelectedUserEntity, PeopleSelectRecyclerViewAdapter.RecyViewHolder> {
-    SelectedUserEntity addEntity;
+    private boolean isEditable;
+    private boolean isPlusEnable;
 
-    public PeopleSelectRecyclerViewAdapter() {
+    public PeopleSelectRecyclerViewAdapter(boolean isEditable,boolean isPlusEnable) {
         super(R.layout.layout_recy_item_people_select);
-        addEntity = new SelectedUserEntity();
-        addEntity.setPreview(true);
-        addEntity.setName("");
-        addEntity.setPhone("");
-        addEntity.setPhotoUrl("");
-        addEntity.setUserId("11");
-        appendData(addEntity);
+        this.isEditable = isEditable;
+        this.isPlusEnable = isPlusEnable;
     }
 
     @Override
@@ -39,14 +35,23 @@ public class PeopleSelectRecyclerViewAdapter extends HFSingleTypeRecyAdapter<Sel
         return new PeopleSelectRecyclerViewAdapter.RecyViewHolder(itemView);
     }
 
-
     @Override
     public void bindDataToHolder(PeopleSelectRecyclerViewAdapter.RecyViewHolder holder, SelectedUserEntity entity, int position) {
-        holder.name.setText(entity.getName());
-        Glide.with(DemoApplication.getInstance().getApplicationContext()).load(entity.getPhotoUrl()).into(holder.photo);
-        holder.deleteIcon.setTag(position);
-        if (entity.isPreview()) {
+        if (isPlusEnable && position == getItemCount()-1) {
+            holder.name.setVisibility(View.INVISIBLE);
             holder.deleteIcon.setVisibility(View.GONE);
+            Glide.with(DemoApplication.getInstance().getApplicationContext()).load(R.mipmap.bga_pp_ic_plus).into(holder.photo);
+            holder.photoCov.setVisibility(View.GONE);
+        } else {
+            holder.name.setVisibility(View.VISIBLE);
+            holder.name.setText(entity.getName());
+            Glide.with(DemoApplication.getInstance().getApplicationContext()).load(entity.getPhotoUrl()).into(holder.photo);
+            holder.deleteIcon.setTag(position);
+            if (isEditable) {
+                holder.deleteIcon.setVisibility(View.VISIBLE);
+            } else {
+                holder.deleteIcon.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -55,12 +60,49 @@ public class PeopleSelectRecyclerViewAdapter extends HFSingleTypeRecyAdapter<Sel
         TextView name;
         ImageView photo;
         ImageView deleteIcon;
+        View photoCov;
 
         public RecyViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.name_tv);
             deleteIcon = (ImageView) itemView.findViewById(R.id.delete_iv);
             photo = (ImageView) itemView.findViewById(R.id.photo_iv);
+            photoCov = itemView.findViewById(R.id.photo_cov_v);
         }
+    }
+
+    @Override
+    public int getItemCount() {
+        if (isPlusEnable) {
+            return super.getItemCount() + 1;
+        }
+        return super.getItemCount();
+    }
+
+    @Override
+    public SelectedUserEntity getData(int position) {
+        if (isPlusEnable && position == getItemCount()-1) {
+            return null;
+        }
+        return super.getData(position);
+    }
+
+
+    public boolean isEditable() {
+        return isEditable;
+    }
+
+    public void setEditable(boolean editable) {
+        isEditable = editable;
+        this.notifyDataSetChanged();
+    }
+
+    public boolean isPlusEnable() {
+        return isPlusEnable;
+    }
+
+    public void setPlusEnable(boolean plusEnable) {
+        isPlusEnable = plusEnable;
+        this.notifyDataSetChanged();
     }
 }

@@ -1,5 +1,6 @@
 package com.mcw.demo.ui.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -308,4 +309,8 @@ public class UserPickerActivity extends BaseActivity {
 //            progressBar.setVisibility(View.GONE);
 //        }
 //    }
+
+    public static void navToSelectPeople(Activity activity){
+        activity.startActivity(new Intent(activity,UserPickerActivity.class));
+    }
 }

@@ -12,6 +12,8 @@ import com.igeek.hfrecyleviewlib.HFGridSpanSizeLookup;
 import com.igeek.hfrecyleviewlib.HFGridVerDecoration;
 import com.mcw.R;
 import com.mcw.demo.model.SelectedUserListEntity;
+import com.mcw.demo.ui.activity.MeetingActivity;
+import com.mcw.demo.ui.adapter.PeopleSelectAdapterListener;
 import com.mcw.demo.ui.adapter.PeopleSelectRecyclerViewAdapter;
 
 import butterknife.BindView;
@@ -30,6 +32,9 @@ public class SelectedUserType extends BaseHolderType<SelectedUserListEntity, Sel
 
     private SelectedUserTypeSubViewOnClickListener listener;
 
+    private PeopleSelectAdapterListener peopleSelectAdapterListener;
+    private PeopleSelectRecyclerViewAdapter adapter;
+
     public SelectedUserType(SelectedUserTypeSubViewOnClickListener listener){
         this.listener = listener;
     }
@@ -47,7 +52,11 @@ public class SelectedUserType extends BaseHolderType<SelectedUserListEntity, Sel
 
     @Override
     public void bindDataToHolder(Viewholder viewholder, SelectedUserListEntity selectedUserListEntity, int postion) {
-        final PeopleSelectRecyclerViewAdapter adapter = new PeopleSelectRecyclerViewAdapter();
+        if (selectedUserListEntity.getModelType() != MeetingActivity.MODEL_TYPE_CREATE_MEETING) {
+            adapter = new PeopleSelectRecyclerViewAdapter(false,false);
+        }else{
+            adapter = new PeopleSelectRecyclerViewAdapter(true,false);
+        }
         viewholder.peopleSelectRv.addItemDecoration(new HFGridVerDecoration());
         viewholder.peopleSelectRv.setItemAnimator(new DefaultItemAnimator());
         viewholder.peopleSelectRv.setAdapter(adapter);
@@ -64,6 +73,25 @@ public class SelectedUserType extends BaseHolderType<SelectedUserListEntity, Sel
                 listener.onDeleteUser(v);
             }
         });
+
+        adapter.setItemClickListener(new BasicRecyViewHolder.OnItemClickListener() {
+            @Override
+            public void OnItemClick(View v, int adapterPosition) {
+                if (adapter.isPlusEnable()&&adapterPosition == adapter.getItemCount()-1){
+                    peopleSelectAdapterListener.onClickPlusItem();
+                }else{
+                    peopleSelectAdapterListener.onClickNormalItem(adapter.getData(adapterPosition));
+                }
+            }
+        });
+    }
+
+    public PeopleSelectAdapterListener getPeopleSelectAdapterListener() {
+        return peopleSelectAdapterListener;
+    }
+
+    public void setPeopleSelectAdapterListener(PeopleSelectAdapterListener peopleSelectAdapterListener) {
+        this.peopleSelectAdapterListener = peopleSelectAdapterListener;
     }
 
     public static class Viewholder extends BasicRecyViewHolder {
@@ -77,7 +105,6 @@ public class SelectedUserType extends BaseHolderType<SelectedUserListEntity, Sel
         public Viewholder(View itemView, OnItemClickListener clickListener, OnItemLongClickListener longClickListener) {
             super(itemView, clickListener, longClickListener);
             ButterKnife.bind(this,itemView);
-
         }
     }
 

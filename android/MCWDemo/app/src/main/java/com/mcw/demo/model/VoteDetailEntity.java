@@ -21,7 +21,7 @@ public class VoteDetailEntity {
      * countReject : 0
      * countGiveup : 0
      * countKeep : 0
-     * hasVoted : 1
+     * resultCode : "AGREE"
      */
 
     private String voteId;
@@ -32,7 +32,7 @@ public class VoteDetailEntity {
     private int countReject;
     private int countGiveup;
     private int countKeep;
-    private int hasVoted;
+    private String resultCode;
 
     public String getVoteId() {
         return voteId;
@@ -98,11 +98,11 @@ public class VoteDetailEntity {
         this.countKeep = countKeep;
     }
 
-    public int getHasVoted() {
-        return hasVoted;
+    public String getResultCode() {
+        return resultCode;
     }
 
-    public void setHasVoted(int hasVoted) {
-        this.hasVoted = hasVoted;
+    public void setResultCode(String resultCode) {
+        this.resultCode = resultCode;
     }
 }

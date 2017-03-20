@@ -16,6 +16,7 @@ import com.mcw.R;
 import com.mcw.demo.api.DemoApiFactory;
 import com.mcw.demo.model.MyVoteItemEntity;
 import com.mcw.demo.ui.adapter.MyVoteRecyclerViewAdapter;
+import com.mcw.demo.util.rxjavaresult.ActivityResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +44,6 @@ public class MyVoteActivity extends BaseActivity implements BasicRecyViewHolder.
         if (adapter == null) {
             adapter = new MyVoteRecyclerViewAdapter();
             adapter.setItemClickListener(this);
-            adapter.addSubViewListener(R.id.to_vote_detail_iv, new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    VoteDetailActivity.navToVoteDetail(MyVoteActivity.this, view.getTag().toString());
-                }
-            });
             votes = new ArrayList<>();
             adapter.refreshDatas(votes);
         }
@@ -59,10 +54,13 @@ public class MyVoteActivity extends BaseActivity implements BasicRecyViewHolder.
         myVoteSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                myVoteSrl.setRefreshing(false);
+                loadVoteInfoList();
             }
         });
+        loadVoteInfoList();
+    }
 
+    private void loadVoteInfoList(){
         DemoApiFactory.getInstance().getVoteList(meetingId).subscribe(new Subscriber<List<MyVoteItemEntity>>() {
             @Override
             public void onCompleted() {
@@ -79,6 +77,7 @@ public class MyVoteActivity extends BaseActivity implements BasicRecyViewHolder.
             public void onNext(List<MyVoteItemEntity> myVoteItemEntities) {
                 myVoteSrl.setRefreshing(false);
                 if (myVoteItemEntities != null && myVoteItemEntities.size() > 0) {
+                    votes.clear();
                     votes.addAll(myVoteItemEntities);
                     adapter.refreshDatas(votes);
                 }
@@ -88,7 +87,26 @@ public class MyVoteActivity extends BaseActivity implements BasicRecyViewHolder.
 
     @Override
     public void OnItemClick(View v, int adapterPosition) {
-        VoteDetailActivity.navToVoteDetail(MyVoteActivity.this, adapter.getData(adapterPosition).getVoteId());
+        VoteDetailActivity.navToVoteDetail(mContext, adapter.getData(adapterPosition).getVoteId()).subscribe(new Subscriber<ActivityResult>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(ActivityResult activityResult) {
+                if (activityResult.isOk()){
+
+                }else{
+
+                }
+            }
+        });
     }
 
     public static void navToMyVote(Activity activity, String meetingId) {

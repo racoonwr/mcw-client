@@ -37,7 +37,7 @@ public abstract class HFSingleTypeRecyAdapter<T,H extends BasicRecyViewHolder> e
 
     @Override
     public void bindDataToViewHolder(BasicRecyViewHolder holder, int position, int viewType) {
-        bindDataToHolder((H) holder,datas.get(position),position);
+        bindDataToHolder((H) holder,getData(position),position);
     }
 
     public abstract H buildViewHolder(View itemView);

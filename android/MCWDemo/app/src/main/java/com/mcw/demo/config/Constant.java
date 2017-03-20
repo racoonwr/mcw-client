@@ -12,4 +12,5 @@ package com.mcw.demo.config;
 public class Constant {
     public static final int START_ACTIVITY_FLAG_NAV_TO_CREATE_VOTE = 1;
     public static final int START_ACTIVITY_FLAG_NAV_TO_CREATE_MEETING = 2;
+    public static final int START_ACTIVITY_FLAG_NAV_TO_VOTE_DETAIL = 3;
 }

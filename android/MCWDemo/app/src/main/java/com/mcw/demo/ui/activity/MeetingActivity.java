@@ -2,7 +2,9 @@ package com.mcw.demo.ui.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.GridLayoutManager;
@@ -19,7 +21,9 @@ import com.google.gson.Gson;
 import com.igeek.hfrecyleviewlib.HFGridMultiTypeGapDecoration;
 import com.igeek.hfrecyleviewlib.HFMultiTypeRecyAdapter;
 import com.igeek.hfrecyleviewlib.HolderTypeData;
+import com.liuguangqiang.materialdialog.MaterialDialog;
 import com.mcw.R;
+import com.mcw.demo.DemoApplication;
 import com.mcw.demo.api.DemoApiFactory;
 import com.mcw.demo.config.Constant;
 import com.mcw.demo.model.MeetingBaseInfoEntity;
@@ -30,6 +34,7 @@ import com.mcw.demo.model.SummaryInfoEntity;
 import com.mcw.demo.model.UserInfo;
 import com.mcw.demo.model.VoteInfoEntity;
 import com.mcw.demo.ui.adapter.GridMuiltTypeSpanSizeLookup;
+import com.mcw.demo.ui.adapter.PeopleSelectAdapterListener;
 import com.mcw.demo.ui.adapter.bean.MeetingBaseInfoType;
 import com.mcw.demo.ui.adapter.bean.SelectedUserType;
 import com.mcw.demo.ui.adapter.bean.SummaryInfoType;
@@ -56,7 +61,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 import rx.Observable;
 import rx.Subscriber;
 
-public class MeetingActivity extends BaseActivity implements SelectedUserType.SelectedUserTypeSubViewOnClickListener, SummaryInfoType.NinePhotoLayoutListener, CalendarDatePickerDialogFragment.OnDateSetListener, RadialTimePickerDialogFragment.OnTimeSetListener {
+public class MeetingActivity extends BaseActivity implements SelectedUserType.SelectedUserTypeSubViewOnClickListener, SummaryInfoType.NinePhotoLayoutListener, CalendarDatePickerDialogFragment.OnDateSetListener, RadialTimePickerDialogFragment.OnTimeSetListener, PeopleSelectAdapterListener {
 
     public static final int MODEL_TYPE_NOT_DEFINE = 0x1000;
     public static final int MODEL_TYPE_CREATE_MEETING = 0x1001;  //创建会议
@@ -88,6 +93,7 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
     private List<MyVoteItemEntity> myVoteList;
     private List<SelectedUserEntity> selectedUserList;
     private MeetingBaseInfoEntity meetingBaseInfoEntity;
+    private SelectedUserListEntity selectedUserListEntity;
     private SummaryInfoEntity summaryInfoEntity;
     private MeetingActivity mContext;
 
@@ -204,8 +210,10 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
         datas.add(meetingBaseInfoType);
         //与会人员
         SelectedUserType selectedUserType = new SelectedUserType(mContext);
-        SelectedUserListEntity selectedUserListEntity = new SelectedUserListEntity();
+        selectedUserType.setPeopleSelectAdapterListener(mContext);
+        selectedUserListEntity = new SelectedUserListEntity();
         selectedUserListEntity.setType(TYPE_SELECTED_USER);
+        selectedUserListEntity.setModelType(modelType);
         selectedUserList = new ArrayList<>();
         selectedUserListEntity.setList(selectedUserList);
         selectedUserType.setData(selectedUserListEntity);
@@ -230,6 +238,7 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
                     modelType = MODEL_TYPE_INPUT_SUMMARY;
                 }
                 SummaryInfoType summaryInfoType = new SummaryInfoType(mContext, customTimeEditViewOnTouchListener);
+                summaryInfoType.setPeopleSelectAdapterListener(mContext);
                 summaryInfoEntity = new SummaryInfoEntity();
                 summaryInfoEntity.setType(TYPE_SUMMARY_INFO);
                 summaryInfoEntity.setModelType(modelType);
@@ -285,8 +294,7 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
                 ShowQRCodeActivity.navToShowQRCode(mContext, meetingId);
                 break;
             case MODEL_TYPE_IN_MEETING:
-                Intent intent = new Intent(mContext, ScanQRCodeActivity.class);
-                startActivity(intent);
+                ScanQRCodeActivity.navToScanQRCode(mContext, meetingId);
                 break;
             case MODEL_TYPE_INPUT_SUMMARY:
                 createSummary();
@@ -422,12 +430,14 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
             public void onNext(Boolean aBoolean) {
                 if (aBoolean.booleanValue()) {
                     SummaryInfoType summaryInfoType = new SummaryInfoType(mContext, customTimeEditViewOnTouchListener);
+                    summaryInfoType.setPeopleSelectAdapterListener(mContext);
                     summaryInfoEntity = new SummaryInfoEntity();
                     summaryInfoEntity.setType(TYPE_SUMMARY_INFO);
                     summaryInfoType.setData(summaryInfoEntity);
                     meetingBaseInfoEntity.setStatusCode("SUMMARY");
                     configBottomBtn("SUMMARY", meetingBaseInfoEntity.getCreatedBy());
                     adapter.appendData(summaryInfoType);
+                    contentRv.smoothScrollToPosition(2);
                 } else {
                     ToastMaster.popToast(mContext, "请求失败");
                 }
@@ -495,7 +505,7 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
                     myVoteItemEntity.setVoteContent(activityResult.getData().getStringExtra("voteContent"));
                     myVoteItemEntity.setAnonymity(activityResult.getData().getIntExtra("noName", 1));
 
-                    DemoApiFactory.getInstance().createVote(meetingId,myVoteItemEntity).subscribe(new Subscriber<Boolean>() {
+                    DemoApiFactory.getInstance().createVote(meetingId, myVoteItemEntity).subscribe(new Subscriber<Boolean>() {
                         @Override
                         public void onCompleted() {
 
@@ -504,15 +514,15 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
                         @Override
                         public void onError(Throwable e) {
                             e.printStackTrace();
-                            ToastMaster.popToast(mContext,"创建投票失败");
+                            ToastMaster.popToast(mContext, "创建投票失败");
                         }
 
                         @Override
                         public void onNext(Boolean aBoolean) {
-                            if (aBoolean.booleanValue()){
+                            if (aBoolean.booleanValue()) {
                                 MyVoteActivity.navToMyVote(mContext, meetingId);
-                            }else{
-                                ToastMaster.popToast(mContext,"创建投票失败");
+                            } else {
+                                ToastMaster.popToast(mContext, "创建投票失败");
                             }
                         }
                     });
@@ -601,26 +611,48 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
         if (summaryInfoEntity != null) {
             summaryInfoEntity.setModelType(modelType);
         }
+        if (selectedUserListEntity != null) {
+            selectedUserListEntity.setModelType(modelType);
+        }
     }
 
     @Override
-    public void onItemDelete(BGASortableNinePhotoLayout layout, int position) {
+    public void onMeetingPicDelete(BGASortableNinePhotoLayout layout, int position) {
         layout.removeItem(position);
     }
 
     @Override
-    public void onItemClick(BGASortableNinePhotoLayout layout, int position, String model, ArrayList<String> models) {
+    public void onMeetingPicClick(BGASortableNinePhotoLayout layout, int position, String model, ArrayList<String> models) {
         startActivityForResult(BGAPhotoPickerPreviewActivity.newIntent(mContext, layout.getMaxItemCount(), models, models, position, false), REQUEST_CODE_PHOTO_PREVIEW);
     }
 
     @Override
     @AfterPermissionGranted(REQUEST_CODE_PERMISSION_PHOTO_PICKER)
-    public void onItemAdd(BGASortableNinePhotoLayout layout) {
+    public void onMeetingPicAdd(final BGASortableNinePhotoLayout layout) {
         String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
         if (EasyPermissions.hasPermissions(this, perms)) {
             // 拍照后照片的存放目录，改成你自己拍照后要存放照片的目录。如果不传递该参数的话就没有拍照功能
             File takePhotoDir = new File(Environment.getExternalStorageDirectory(), "BGAPhotoPickerTakePhoto");
-            startActivityForResult(BGAPhotoPickerActivity.newIntent(mContext, true ? takePhotoDir : null, layout.getMaxItemCount() - layout.getItemCount(), null, false), REQUEST_CODE_CHOOSE_PHOTO);
+            RxActivityResult.getInstance(DemoApplication.getInstance().getApplicationContext())
+                    .from(mContext)
+                    .startActivityForResult(BGAPhotoPickerActivity.newIntent(mContext, true ? takePhotoDir : null, layout.getMaxItemCount() - layout.getItemCount(), null, false), REQUEST_CODE_CHOOSE_PHOTO)
+                    .subscribe(new Subscriber<ActivityResult>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onNext(ActivityResult activityResult) {
+                            if (activityResult.isOk())
+                                layout.addMoreData(BGAPhotoPickerActivity.getSelectedImages(activityResult.getData()));
+                        }
+                    });
         } else {
             EasyPermissions.requestPermissions(mContext, "图片选择需要以下权限:\n\n1.访问设备上的照片\n\n2.拍照", REQUEST_CODE_PERMISSION_PHOTO_PICKER, perms);
         }
@@ -786,4 +818,31 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
         rtpd.show(getSupportFragmentManager(), String.valueOf(evId));
     }
 
+    @Override
+    public void onClickPlusItem() {
+        UserPickerActivity.navToSelectPeople(mContext);
+    }
+
+
+    private MaterialDialog phoneDialog = null;
+
+    @Override
+    public void onClickNormalItem(final SelectedUserEntity entity) {
+        ToastMaster.popToast(mContext, entity.getName());
+        if (phoneDialog == null) {
+            phoneDialog = new MaterialDialog.Builder(mContext).cancelable(true)
+                    .setMessage("确认呼叫 " + entity.getName() + "(" + entity.getPhone() + ")" + " ?")
+                    .setNegativeButton("取消", null)
+                    .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + entity.getPhone()));
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                    })
+                    .build();
+        }
+        phoneDialog.show();
+    }
 }

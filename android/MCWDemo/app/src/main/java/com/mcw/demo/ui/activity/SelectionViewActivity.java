@@ -88,7 +88,7 @@ public class SelectionViewActivity extends BaseActivity implements SelectionView
         selection.refreshSlider(firstVisibleItem);
     }
 
-    public static void startActivity(Context context) {
+    public static void navToSelectPeopleView(Context context) {
         context.startActivity(new Intent(context, SelectionViewActivity.class));
     }
 }

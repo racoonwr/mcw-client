@@ -11,13 +11,19 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.mcw.R;
+import com.mcw.demo.api.DemoApiFactory;
+import com.mcw.demo.util.StringUtils;
+import com.mcw.demo.util.ToastMaster;
 
 import cn.bingoogolapple.photopicker.activity.BGAPhotoPickerActivity;
 import cn.bingoogolapple.qrcode.core.QRCodeView;
 import cn.bingoogolapple.qrcode.zxing.QRCodeDecoder;
 import cn.bingoogolapple.qrcode.zxing.ZXingView;
+import rx.Subscriber;
 
-public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Delegate{
+public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Delegate {
+    private String meetingId;
+
     @Override
     protected int getContentViewLayoutResources() {
         return R.layout.activity_scan_qrcode;
@@ -26,7 +32,7 @@ public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Deleg
     @Override
     protected void initResource(Bundle savedInstanceState) {
         setTitle("二维码签到");
-
+        meetingId = getIntent().getStringExtra("meetingId");
         mQRCodeView = (ZXingView) findViewById(R.id.zxingview);
         mQRCodeView.setDelegate(this);
     }
@@ -41,8 +47,8 @@ public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Deleg
         super.onStart();
         mQRCodeView.startCamera();
 //        mQRCodeView.startCamera(Camera.CameraInfo.CAMERA_FACING_FRONT);
-
         mQRCodeView.showScanRect();
+        mQRCodeView.startSpot();
     }
 
     @Override
@@ -59,15 +65,42 @@ public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Deleg
 
     private void vibrate() {
         Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-        vibrator.vibrate(200);
+        vibrator.vibrate(500);
     }
 
     @Override
     public void onScanQRCodeSuccess(String result) {
-        Log.i(TAG, "result:" + result);
-        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
         vibrate();
-        mQRCodeView.startSpot();
+        Log.i(TAG, "result:" + result);
+        String userId = ShowQRCodeActivity.getScanUserId(meetingId, result);
+        Log.i(TAG, "userId:" + userId);
+        if (StringUtils.isEmpty(userId)) {
+            ToastMaster.popToast(mContext, "scan err");
+        } else {
+            DemoApiFactory.getInstance().meetingSign(meetingId, userId).subscribe(new Subscriber<Boolean>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    e.printStackTrace();
+                    ToastMaster.popToast(mContext, "签到失败");
+                }
+
+                @Override
+                public void onNext(Boolean aBoolean) {
+                    if (aBoolean.booleanValue()) {
+                        ToastMaster.popToast(mContext, "签到成功");
+                        mContext.finish();
+                    } else {
+                        ToastMaster.popToast(mContext, "签到失败");
+                    }
+                }
+            });
+        }
+
     }
 
     @Override
@@ -153,5 +186,11 @@ public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Deleg
                 }
             }.execute();
         }
+    }
+
+    public static void navToScanQRCode(Activity activity, String meetingId) {
+        Intent intent = new Intent(activity, ScanQRCodeActivity.class);
+        intent.putExtra("meetingId", meetingId);
+        activity.startActivity(intent);
     }
 }

@@ -2,6 +2,7 @@ package com.mcw.demo.presenter;
 
 import com.mcw.demo.api.DemoApiFactory;
 import com.mcw.demo.model.MeetingListItemEntity;
+import com.mcw.demo.model.UserInfo;
 import com.mcw.demo.ui.fragment.IMeetingFragment;
 
 import java.util.ArrayList;
@@ -26,59 +27,65 @@ public class MeetingFragmentPresenter {
         this.fragment = fragment;
     }
 
-    private int pageSize = 3;
+    private int pageSize = 7;
     private int lastId = 0;
-    private int maxId = 5;
+    private int currentPageNo = 0;
     private boolean hasMoreData = true;
+    private boolean isInLoading = false;
 
-    public void loadNetData(){
-        DemoApiFactory.getInstance().getMeetingList("d17948d8-0802-11e7-93ae-92361f002671").subscribe(new Subscriber<List<MeetingListItemEntity>>() {
+    public void loadNetData(final boolean reset) {
+        if (isInLoading) {
+            return;
+        }
+        isInLoading = true;
+
+        if (reset) {
+            currentPageNo = 0;
+            hasMoreData = true;
+        }else{
+            fragment.startLoadNetMeetingData();
+        }
+
+        if (!hasMoreData) {
+            fragment.finishLoadNetMeetingData(null, false, reset);
+            return;
+        }
+
+        DemoApiFactory.getInstance().getMeetingList(UserInfo.getInstance().getId(), currentPageNo, pageSize).subscribe(new Subscriber<List<MeetingListItemEntity>>() {
             @Override
             public void onCompleted() {
-
+                isInLoading = false;
             }
 
             @Override
             public void onError(Throwable e) {
+                isInLoading = false;
                 e.printStackTrace();
-                fragment.finishLoadNetMeetingData(null);
+                fragment.finishLoadNetMeetingData(null, hasMoreData, reset);
             }
 
             @Override
             public void onNext(List<MeetingListItemEntity> meetingListItemEntities) {
-                fragment.finishLoadNetMeetingData(meetingListItemEntities);
+                isInLoading = false;
+                if (meetingListItemEntities == null || meetingListItemEntities.size() < pageSize) {
+                    hasMoreData = false;
+                } else {
+                    currentPageNo++;
+                }
+                fragment.finishLoadNetMeetingData(meetingListItemEntities, hasMoreData, reset);
             }
         });
-//        List<MeetingListItemEntity> moreData = new ArrayList<>();
-//        MeetingListItemEntity entity = new MeetingListItemEntity();
-//        entity.setStartDatePlan(1111111l);
-//        entity.setEndDatePlan(1111111l);
-//        entity.setMeetingId(String.valueOf(++maxId + 1));
-//        entity.setLocation("会议室2");
-//        entity.setStatusCode("1");
-//        entity.setCreatedBy("1");
-//        moreData.add(entity);
-//        MeetingListItemEntity entity2 = new MeetingListItemEntity();
-//        entity2.setStartDatePlan(1111111l);
-//        entity2.setEndDatePlan(1111111l);
-//        entity2.setMeetingId(""+maxId);
-//        entity2.setLocation("会议室3");
-//        entity2.setStatusCode("1");
-//        entity2.setCreatedBy("1");
-//        moreData.add(entity2);
-//        maxId++;
-//        fragment.finishLoadNetMeetingData(moreData);
     }
 
-    public void loadLocalData() {
-        //加载本地数据
-        fragment.startLoadLocalMeetingList();
-        List<MeetingListItemEntity> moreData = testData();
-        if (moreData.size() < pageSize){
-            fragment.noMoreLocalMeetingData();
-        }
-        fragment.finishLoadLocalMeetingList(moreData,hasMoreData);
-    }
+//    public void loadLocalData() {
+//        //加载本地数据
+//        fragment.startLoadLocalMeetingList();
+//        List<MeetingListItemEntity> moreData = testData();
+//        if (moreData.size() < pageSize) {
+//            fragment.noMoreLocalMeetingData();
+//        }
+//        fragment.finishLoadLocalMeetingList(moreData, hasMoreData);
+//    }
 
     private List<MeetingListItemEntity> testData() {
         List<MeetingListItemEntity> meetings = new ArrayList<>();
@@ -109,7 +116,6 @@ public class MeetingFragmentPresenter {
                 entity3.setCreatedBy("1");
                 meetings.add(entity3);
                 lastId = 3;
-                maxId = 5;
             } else {
                 MeetingListItemEntity entity = new MeetingListItemEntity();
                 entity.setStartDatePlan(1111111l);

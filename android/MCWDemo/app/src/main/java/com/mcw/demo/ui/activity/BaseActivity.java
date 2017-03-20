@@ -16,7 +16,7 @@ import android.widget.EditText;
  * Created by Alex on 2016/5/23.
  */
 public abstract class BaseActivity extends AppCompatActivity {
-    private BaseActivity mContext;
+    public BaseActivity mContext;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

@@ -74,7 +74,7 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
         }
         initData();
         initView(group);
-        presenter.loadLocalData();
+        presenter.loadNetData(true);
         return group;
     }
 
@@ -86,7 +86,6 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
     @Override
     public void loadMoreMeetingInfo(List<MeetingListItemEntity> newMeetings) {
         meetings.addAll(newMeetings);
-
     }
 
     @Override
@@ -94,31 +93,25 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
     }
 
     @Override
-    public void finishLoadLocalMeetingList(List<MeetingListItemEntity> localMeetings, boolean hasMore) {
-        adapter.appendDatas(localMeetings);
-        if (hasMore) {
-            adapter.footView.setVisibility(View.GONE);
-        } else {
-            adapter.footView.setVisibility(View.VISIBLE);
+    public void finishLoadNetMeetingData(List<MeetingListItemEntity> newMeetingData, boolean hasMore, boolean reset) {
+        meetingSrl.setRefreshing(false);
+        if (reset){
+            adapter.refreshDatas(newMeetingData);
+        }else{
+            adapter.appendDatas(newMeetingData);
+        }
+        if (!hasMore) {
             adapter.updateFootView(nodataView);
+            adapter.notifyItemChanged(adapter.getDataCount());
+        } else {
+            adapter.footView.setVisibility(View.GONE);
         }
     }
 
     @Override
-    public void noMoreLocalMeetingData() {
-        adapter.updateFootView(nodataView);
-    }
-
-    @Override
-    public void startLoadLocalMeetingList() {
+    public void startLoadNetMeetingData() {
         adapter.updateFootView(loadingView);
-    }
-
-    @Override
-    public void finishLoadNetMeetingData(List<MeetingListItemEntity> newMeetingData) {
-        if (newMeetingData != null)
-            adapter.insertDatas(0, newMeetingData);
-        meetingSrl.setRefreshing(false);
+        adapter.footView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -134,8 +127,8 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
         nodataView = getActivity().getLayoutInflater().inflate(R.layout.layout_list_nodata, null);
         if (adapter == null) {
             adapter = new MeetingListRecyclerViewAdapter();
-            adapter.setFootView(loadingView);
             adapter.setItemClickListener(this);
+            adapter.setFootView(loadingView);
         }
         meetingListRv.setAdapter(adapter);
         meetingListRv.addOnScrollListener(scrollListener);
@@ -145,7 +138,7 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
         meetingSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                presenter.loadNetData();
+                presenter.loadNetData(true);
             }
         });
     }
@@ -153,20 +146,19 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
     public RecycleScrollListener scrollListener = new RecycleScrollListener() {
         @Override
         public void loadMore() {
-            System.out.println("loadMore");
-            presenter.loadLocalData();
+            presenter.loadNetData(false);
         }
 
         @Override
         public void refresh() {
-            System.out.println("refresh");
+
         }
     };
 
     @Override
     public void OnItemClick(View v, int adapterPosition) {
         MeetingListItemEntity entity = adapter.getData(adapterPosition);
-        MeetingActivity.navToViewMeetingDetail(getActivity(),entity.getMeetingId(),entity.getCreatedBy(),entity.getStatusCode());
+        MeetingActivity.navToViewMeetingDetail(getActivity(), entity.getMeetingId(), entity.getCreatedBy(), entity.getStatusCode());
     }
 
     @Override
@@ -193,7 +185,7 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
                 public void onNext(ActivityResult activityResult) {
                     if (activityResult.isOk()) {
                         String meetingInfo = activityResult.getData().getStringExtra("meetingInfo");
-                        MeetingBaseInfoEntity tmp = new Gson().fromJson(meetingInfo,MeetingBaseInfoEntity.class);
+                        MeetingBaseInfoEntity tmp = new Gson().fromJson(meetingInfo, MeetingBaseInfoEntity.class);
                         MeetingListItemEntity entity = new MeetingListItemEntity();
                         entity.setStartDatePlan(tmp.getStartDatePlan());
                         entity.setEndDatePlan(tmp.getEndDatePlan());

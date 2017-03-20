@@ -17,6 +17,7 @@ import com.mcw.demo.DemoApplication;
 public class UserInfo {
 
     private String id = "d17948d8-0802-11e7-93ae-92361f002671";
+//    private String id = "d179431a-0802-11e7-93ae-92361f002671";
     private String userSig;
     private String token;
 

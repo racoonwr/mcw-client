@@ -17,6 +17,7 @@ public final class DateUtil {
      */
     public static final String yyyyMMDD = "yyyy年MM月dd日";
     public static final String yyyyMMddHHmmss = "yyyy年MM月dd日 HH:mm:ss";
+    public static final String yyyyMMddHHmm = "yyyy年MM月dd日 HH:mm";
     public static final String HHmmss = "HH:mm:ss";
     public static final String HHmm = "HH:mm";
     public static final String LOCALE_DATE_FORMAT = "yyyy年M月d日 HH:mm:ss";

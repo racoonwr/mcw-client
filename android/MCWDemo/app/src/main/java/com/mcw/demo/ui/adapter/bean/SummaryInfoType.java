@@ -1,5 +1,6 @@
 package com.mcw.demo.ui.adapter.bean;
 
+import android.content.Context;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import com.igeek.hfrecyleviewlib.HFGridVerDecoration;
 import com.mcw.R;
 import com.mcw.demo.model.SummaryInfoEntity;
 import com.mcw.demo.ui.activity.MeetingActivity;
+import com.mcw.demo.ui.adapter.PeopleSelectAdapterListener;
 import com.mcw.demo.ui.adapter.PeopleSelectRecyclerViewAdapter;
 import com.mcw.demo.util.DateUtil;
 
@@ -39,6 +41,9 @@ public class SummaryInfoType extends BaseHolderType<SummaryInfoEntity, SummaryIn
     private NinePhotoLayoutListener listener;
     private View.OnTouchListener customTimeEditViewOnTouchListener;
     private BGASortableNinePhotoLayout mPicSnpl;
+    private Context mContext;
+    private PeopleSelectAdapterListener peopleSelectAdapterListener;
+    private PeopleSelectRecyclerViewAdapter adapter;
 
     public SummaryInfoType(NinePhotoLayoutListener listener, View.OnTouchListener onTouchListener) {
         this.listener = listener;
@@ -48,7 +53,8 @@ public class SummaryInfoType extends BaseHolderType<SummaryInfoEntity, SummaryIn
 
     @Override
     public BasicRecyViewHolder buildHolder(ViewGroup parent) {
-        return new Viewholder(View.inflate(parent.getContext(), R.layout.layout_upload_meeting_summary, null));
+        mContext = parent.getContext();
+        return new Viewholder(View.inflate(mContext, R.layout.layout_upload_meeting_summary, null));
     }
 
     @Override
@@ -117,9 +123,20 @@ public class SummaryInfoType extends BaseHolderType<SummaryInfoEntity, SummaryIn
             }
         });
 
-
         mPicSnpl = viewholder.snplMeetingContentAddPic;
-        PeopleSelectRecyclerViewAdapter adapter = new PeopleSelectRecyclerViewAdapter();
+        if (summaryInfoEntity.getModelType() != MeetingActivity.MODEL_TYPE_INPUT_SUMMARY) {
+            adapter = new PeopleSelectRecyclerViewAdapter(false, false);
+        } else {
+            adapter = new PeopleSelectRecyclerViewAdapter(true, true);
+        }
+        adapter.setItemClickListener(new BasicRecyViewHolder.OnItemClickListener() {
+            @Override
+            public void OnItemClick(View v, int adapterPosition) {
+                if (adapter.isPlusEnable() && adapterPosition == adapter.getItemCount() - 1) {
+                    peopleSelectAdapterListener.onClickPlusItem();
+                }
+            }
+        });
         viewholder.peopleSelectRv.addItemDecoration(new HFGridVerDecoration());
         viewholder.peopleSelectRv.setItemAnimator(new DefaultItemAnimator());
         viewholder.peopleSelectRv.setAdapter(adapter);
@@ -130,7 +147,6 @@ public class SummaryInfoType extends BaseHolderType<SummaryInfoEntity, SummaryIn
         manager.setSpanSizeLookup(spanSizeLookup);
         viewholder.peopleSelectRv.setLayoutManager(manager);
         adapter.refreshDatas(summaryInfoEntity.getInvitedUsersList());
-
         viewholder.snplMeetingContentAddPic.setMaxItemCount(9);
         viewholder.snplMeetingContentAddPic.setDelegate(this);
 //        viewholder.snplMeetingContentAddPic.setData(summaryInfoEntity.getMeetingPicsList());
@@ -159,19 +175,27 @@ public class SummaryInfoType extends BaseHolderType<SummaryInfoEntity, SummaryIn
         viewholder.realEndTimeEt.setText(DateUtil.translateDate(realEndDate, DateUtil.HHmm));
     }
 
+    public PeopleSelectAdapterListener getPeopleSelectAdapterListener() {
+        return peopleSelectAdapterListener;
+    }
+
+    public void setPeopleSelectAdapterListener(PeopleSelectAdapterListener peopleSelectAdapterListener) {
+        this.peopleSelectAdapterListener = peopleSelectAdapterListener;
+    }
+
     @Override
     public void onClickAddNinePhotoItem(BGASortableNinePhotoLayout sortableNinePhotoLayout, View view, int position, ArrayList<String> models) {
-        listener.onItemAdd(mPicSnpl);
+        listener.onMeetingPicAdd(mPicSnpl);
     }
 
     @Override
     public void onClickDeleteNinePhotoItem(BGASortableNinePhotoLayout sortableNinePhotoLayout, View view, int position, String model, ArrayList<String> models) {
-        listener.onItemDelete(mPicSnpl, position);
+        listener.onMeetingPicDelete(mPicSnpl, position);
     }
 
     @Override
     public void onClickNinePhotoItem(BGASortableNinePhotoLayout sortableNinePhotoLayout, View view, int position, String model, ArrayList<String> models) {
-        listener.onItemClick(mPicSnpl, position, model, models);
+        listener.onMeetingPicClick(mPicSnpl, position, model, models);
     }
 
     public static class Viewholder extends BasicRecyViewHolder {
@@ -203,11 +227,10 @@ public class SummaryInfoType extends BaseHolderType<SummaryInfoEntity, SummaryIn
     }
 
     public interface NinePhotoLayoutListener {
-        void onItemDelete(BGASortableNinePhotoLayout layout, int position);
+        void onMeetingPicDelete(BGASortableNinePhotoLayout layout, int position);
 
-        void onItemClick(BGASortableNinePhotoLayout layout, int position, String model, ArrayList<String> models);
+        void onMeetingPicClick(BGASortableNinePhotoLayout layout, int position, String model, ArrayList<String> models);
 
-        void onItemAdd(BGASortableNinePhotoLayout layout);
+        void onMeetingPicAdd(BGASortableNinePhotoLayout layout);
     }
-
 }

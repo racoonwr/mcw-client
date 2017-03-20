@@ -48,7 +48,7 @@ public class ChartDetailActivity extends BaseActivity {
         voteId = getIntent().getIntExtra("voteId", 0);
 
         if (agreeAdapter == null) {
-            agreeAdapter = new PeopleSelectRecyclerViewAdapter();
+            agreeAdapter = new PeopleSelectRecyclerViewAdapter(false,false);
         }
         peopleAgreeRv.addItemDecoration(new HFGridVerDecoration());
         peopleAgreeRv.setItemAnimator(new DefaultItemAnimator());
@@ -115,7 +115,7 @@ public class ChartDetailActivity extends BaseActivity {
         agreeAdapter.appendDatas(agreeList);
 
         if (rejectAdapter == null) {
-            rejectAdapter = new PeopleSelectRecyclerViewAdapter();
+            rejectAdapter = new PeopleSelectRecyclerViewAdapter(false,false);
         }
         peopleRejectRv.addItemDecoration(new HFGridVerDecoration());
         peopleRejectRv.setItemAnimator(new DefaultItemAnimator());
@@ -168,7 +168,7 @@ public class ChartDetailActivity extends BaseActivity {
 
 
         if (giveUpAdapter == null) {
-            giveUpAdapter = new PeopleSelectRecyclerViewAdapter();
+            giveUpAdapter = new PeopleSelectRecyclerViewAdapter(false,false);
         }
         peopleGiveUpRv.addItemDecoration(new HFGridVerDecoration());
         peopleGiveUpRv.setItemAnimator(new DefaultItemAnimator());
@@ -192,7 +192,7 @@ public class ChartDetailActivity extends BaseActivity {
         giveUpAdapter.appendDatas(giveUpList);
 
         if (keepAdapter == null) {
-            keepAdapter = new PeopleSelectRecyclerViewAdapter();
+            keepAdapter = new PeopleSelectRecyclerViewAdapter(false,false);
         }
         peopleKeepRv.addItemDecoration(new HFGridVerDecoration());
         peopleKeepRv.setItemAnimator(new DefaultItemAnimator());

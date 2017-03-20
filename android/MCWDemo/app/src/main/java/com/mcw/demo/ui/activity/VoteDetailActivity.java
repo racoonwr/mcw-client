@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -22,9 +23,14 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.mcw.R;
+import com.mcw.demo.DemoApplication;
 import com.mcw.demo.api.DemoApiFactory;
+import com.mcw.demo.config.Constant;
 import com.mcw.demo.model.VoteDetailEntity;
+import com.mcw.demo.util.StringUtils;
 import com.mcw.demo.util.ToastMaster;
+import com.mcw.demo.util.rxjavaresult.ActivityResult;
+import com.mcw.demo.util.rxjavaresult.RxActivityResult;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -33,6 +39,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observable;
 import rx.Subscriber;
 
 public class VoteDetailActivity extends BaseActivity implements OnChartValueSelectedListener {
@@ -142,10 +149,26 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
 
                     voteContextTv.setText(entity.getVoteContent());
                     setData(counts);
-                    if (entity.getHasVoted() == 1) {//已投票
+                    if (!StringUtils.isEmpty(entity.getResultCode())) {//已投票
                         btnsLl.setVisibility(View.GONE);
                         voteResultTv.setVisibility(View.VISIBLE);
-                        voteResultTv.setText("已选择：");
+//                        AGREE/REJECT/GIVEUP/KEEP
+                        String resultMeaning = "";
+                        switch (entity.getResultCode()){
+                            case "AGREE":
+                                resultMeaning= "同意";
+                                break;
+                            case "REJECT":
+                                resultMeaning= "反对";
+                                break;
+                            case "GIVEUP":
+                                resultMeaning= "弃权";
+                                break;
+                            case "KEEP":
+                                resultMeaning= "保留意见";
+                                break;
+                        }
+                        voteResultTv.setText("已选择：" + resultMeaning);
                     } else {//未投票
                         voteResultTv.setVisibility(View.GONE);
                     }
@@ -234,10 +257,10 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
 //        return s;
 //    }
 
-    public static void navToVoteDetail(Activity activity, String voteId) {
+    public static Observable<ActivityResult> navToVoteDetail(Activity activity, String voteId) {
         Intent toDetail = new Intent(activity, VoteDetailActivity.class);
         toDetail.putExtra("voteId", voteId);
-        activity.startActivity(toDetail);
+        return RxActivityResult.getInstance(DemoApplication.getInstance()).from(activity).startActivityForResult(toDetail, Constant.START_ACTIVITY_FLAG_NAV_TO_VOTE_DETAIL);
     }
 
     @Override
@@ -306,5 +329,16 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.setResult(RESULT_CANCELED);
+                this.finish(); // back button
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

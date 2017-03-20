@@ -43,9 +43,9 @@ public interface ApiService {
      *
      * @return
      */
-    @GET("meeting/list/{userId}")
+    @GET("meeting/list/{userId}/{pageNo}/{pageSize}")
     @Headers("Content-Type:" + RetrofitClient.JSON)
-    Observable<ApiResponse<List<MeetingListItemEntity>>> getMeetingList(@Path("userId") String userId);
+    Observable<ApiResponse<List<MeetingListItemEntity>>> getMeetingList(@Path("userId") String userId, @Path("pageNo") int pageNo, @Path("pageSize") int pageSize);
 
     /**
      * 创建会议
@@ -102,7 +102,7 @@ public interface ApiService {
      */
     @GET("vote/detail/{voteId}/{userId}")
     @Headers("Content-Type:" + RetrofitClient.JSON)
-    Observable<ApiResponse<List<VoteDetailEntity>>> getVoteDetail(@Path("voteId") String voteId,@Path("userId") String userId);
+    Observable<ApiResponse<List<VoteDetailEntity>>> getVoteDetail(@Path("voteId") String voteId, @Path("userId") String userId);
 
     /**
      * 创建投票记录
@@ -151,5 +151,16 @@ public interface ApiService {
     @GET("summary/detail/{summaryInfoId}")
     @Headers("Content-Type:" + RetrofitClient.JSON)
     Observable<ApiResponse<List<SummaryInfoEntity>>> getSummaryInfo(@Path("summaryInfoId") String summaryInfoId);
+
+
+    /**
+     * 创建签到信息
+     *
+     * @param params
+     * @return
+     */
+    @POST("meeting/sign")
+    @Headers("Content-Type:" + RetrofitClient.JSON)
+    Observable<ApiResponse<Boolean>> meetingSign(@Body Map params);
 
 }

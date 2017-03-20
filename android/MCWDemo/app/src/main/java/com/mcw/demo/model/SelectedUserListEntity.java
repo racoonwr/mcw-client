@@ -12,6 +12,7 @@ import java.util.List;
  * @date 2017/3/10
  */
 public class SelectedUserListEntity {
+    private int modelType;
     private int type;
     private List<SelectedUserEntity> list;
     public List<SelectedUserEntity> getList() {
@@ -28,5 +29,13 @@ public class SelectedUserListEntity {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public int getModelType() {
+        return modelType;
+    }
+
+    public void setModelType(int modelType) {
+        this.modelType = modelType;
     }
 }

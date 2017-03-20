@@ -15,13 +15,12 @@ import java.util.List;
  */
 public interface IMeetingFragment {
     void gotoMeetingDetail(int meetingId);
+
     void loadMoreMeetingInfo(List<MeetingListItemEntity> newMeetings);
+
     void newMeeting();
 
+    void finishLoadNetMeetingData(List<MeetingListItemEntity> newMeetingData, boolean hasMore, boolean reset);
 
-    void finishLoadLocalMeetingList(List<MeetingListItemEntity> localMeetings, boolean hasMore);
-    void noMoreLocalMeetingData();
-    void startLoadLocalMeetingList();
-
-    void finishLoadNetMeetingData(List<MeetingListItemEntity> newMeetingData);
+    void startLoadNetMeetingData();
 }
