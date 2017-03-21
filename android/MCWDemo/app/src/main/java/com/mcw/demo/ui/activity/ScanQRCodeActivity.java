@@ -11,18 +11,26 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.mcw.R;
+import com.mcw.demo.DemoApplication;
 import com.mcw.demo.api.DemoApiFactory;
+import com.mcw.demo.config.Constant;
 import com.mcw.demo.util.StringUtils;
 import com.mcw.demo.util.ToastMaster;
+import com.mcw.demo.util.rxjavaresult.ActivityResult;
+import com.mcw.demo.util.rxjavaresult.RxActivityResult;
+
+import java.util.Map;
 
 import cn.bingoogolapple.photopicker.activity.BGAPhotoPickerActivity;
 import cn.bingoogolapple.qrcode.core.QRCodeView;
 import cn.bingoogolapple.qrcode.zxing.QRCodeDecoder;
 import cn.bingoogolapple.qrcode.zxing.ZXingView;
+import rx.Observable;
 import rx.Subscriber;
 
 public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Delegate {
     private String meetingId;
+    private String signId,userId;
 
     @Override
     protected int getContentViewLayoutResources() {
@@ -72,12 +80,14 @@ public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Deleg
     public void onScanQRCodeSuccess(String result) {
         vibrate();
         Log.i(TAG, "result:" + result);
-        String userId = ShowQRCodeActivity.getScanUserId(meetingId, result);
-        Log.i(TAG, "userId:" + userId);
-        if (StringUtils.isEmpty(userId)) {
+        Map<String,String> scanAnalyze = ShowQRCodeActivity.getScanResult(meetingId, result);
+        signId = scanAnalyze.get("signId");
+        userId = scanAnalyze.get("userId");
+        Log.i(TAG, "signId:" + signId);
+        if (StringUtils.isEmpty(signId)) {
             ToastMaster.popToast(mContext, "scan err");
         } else {
-            DemoApiFactory.getInstance().meetingSign(meetingId, userId).subscribe(new Subscriber<Boolean>() {
+            DemoApiFactory.getInstance().meetingSign(signId).subscribe(new Subscriber<Boolean>() {
                 @Override
                 public void onCompleted() {
 
@@ -93,6 +103,9 @@ public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Deleg
                 public void onNext(Boolean aBoolean) {
                     if (aBoolean.booleanValue()) {
                         ToastMaster.popToast(mContext, "签到成功");
+                        Intent intent = getIntent();
+                        intent.putExtra("userId",userId);
+                        mContext.setResult(RESULT_OK,intent);
                         mContext.finish();
                     } else {
                         ToastMaster.popToast(mContext, "签到失败");
@@ -188,9 +201,10 @@ public class ScanQRCodeActivity extends BaseActivity implements QRCodeView.Deleg
         }
     }
 
-    public static void navToScanQRCode(Activity activity, String meetingId) {
+    public static Observable<ActivityResult> navToScanQRCode(Activity activity, String meetingId) {
         Intent intent = new Intent(activity, ScanQRCodeActivity.class);
         intent.putExtra("meetingId", meetingId);
-        activity.startActivity(intent);
+        return RxActivityResult.getInstance(DemoApplication.getInstance().getApplicationContext()).from(activity)
+                .startActivityForResult(intent, Constant.START_ACTIVITY_FLAG_NAV_TO_SCAN_QR_CODE);
     }
 }

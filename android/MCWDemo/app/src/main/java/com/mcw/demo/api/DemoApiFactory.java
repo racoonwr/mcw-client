@@ -1,6 +1,7 @@
 package com.mcw.demo.api;
 
 import com.mcw.demo.model.MeetingBaseInfoEntity;
+import com.mcw.demo.model.MeetingDetailEntity;
 import com.mcw.demo.model.MeetingListItemEntity;
 import com.mcw.demo.model.MyVoteItemEntity;
 import com.mcw.demo.model.SelectedUserEntity;
@@ -66,8 +67,8 @@ public class DemoApiFactory extends ApiFactory {
         return apiService.endMeeting(map).map(new HttpResultFunc<Boolean>()).compose(SchedulersCompat.<Boolean>applyExecutorSchedulers());
     }
 
-    public Observable<List<MeetingBaseInfoEntity>> getMeetingBaseInfo(String meetingId) {
-        return apiService.getMeetingBaseInfo(meetingId).map(new HttpResultFunc<List<MeetingBaseInfoEntity>>()).compose(SchedulersCompat.<List<MeetingBaseInfoEntity>>applyExecutorSchedulers());
+    public Observable<List<MeetingDetailEntity>> getMeetingDetail(String meetingId) {
+        return apiService.getMeetingDetail(meetingId).map(new HttpResultFunc<List<MeetingDetailEntity>>()).compose(SchedulersCompat.<List<MeetingDetailEntity>>applyExecutorSchedulers());
     }
 
     public Observable<List<SelectedUserEntity>> getAllUser() {
@@ -128,12 +129,9 @@ public class DemoApiFactory extends ApiFactory {
         return apiService.createVote(map).map(new HttpResultFunc<Boolean>()).compose(SchedulersCompat.<Boolean>applyExecutorSchedulers());
     }
 
-    public Observable<Boolean> meetingSign(String meetingId, String userId) {
+    public Observable<Boolean> meetingSign(String sign) {
         Map<String, Object> map = new HashMap<>();
-        map.put("signId", UUID.randomUUID().toString());
-        map.put("meetingId", meetingId);
-        map.put("userId", userId);
-        map.put("createdBy", UserInfo.getInstance().getId());
+        map.put("signId", sign);
         return apiService.meetingSign(map).map(new HttpResultFunc<Boolean>()).compose(SchedulersCompat.<Boolean>applyExecutorSchedulers());
     }
 

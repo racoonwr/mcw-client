@@ -1,7 +1,7 @@
 package com.mcw.demo.api;
 
 import com.mcw.demo.api.response.ApiResponse;
-import com.mcw.demo.model.MeetingBaseInfoEntity;
+import com.mcw.demo.model.MeetingDetailEntity;
 import com.mcw.demo.model.MeetingListItemEntity;
 import com.mcw.demo.model.MyVoteItemEntity;
 import com.mcw.demo.model.SelectedUserEntity;
@@ -64,7 +64,7 @@ public interface ApiService {
      */
     @GET("meeting/detail/{meetingId}")
     @Headers("Content-Type:" + RetrofitClient.JSON)
-    Observable<ApiResponse<List<MeetingBaseInfoEntity>>> getMeetingBaseInfo(@Path("meetingId") String meetingId);
+    Observable<ApiResponse<List<MeetingDetailEntity>>> getMeetingDetail(@Path("meetingId") String meetingId);
 
     /**
      * 开始会议

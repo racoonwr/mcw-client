@@ -4,12 +4,17 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.ImageView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mcw.R;
+import com.mcw.demo.DemoApplication;
+import com.mcw.demo.config.Constant;
 import com.mcw.demo.model.UserInfo;
+import com.mcw.demo.util.rxjavaresult.ActivityResult;
+import com.mcw.demo.util.rxjavaresult.RxActivityResult;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -41,9 +46,11 @@ public class ShowQRCodeActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         String meetingId = getIntent().getStringExtra("meetingId");
+        String signId = getIntent().getStringExtra("signId");
         params = new HashMap<>();
         params.put("meetingId", meetingId);
         params.put("userId", UserInfo.getInstance().getId());
+        params.put("signId", signId);
 
         setTitle("扫码签到");
 
@@ -75,20 +82,33 @@ public class ShowQRCodeActivity extends BaseActivity {
         return QRCodeEncoder.syncEncodeQRCode(new Gson().toJson(params), BGAQRCodeUtil.dp2px(this, 200));
     }
 
-    public static String getScanUserId(String meetingId, String scanResult) {
-        Type type = new TypeToken<Map<String, String>>() {}.getType();
+    public static Map<String,String> getScanResult(String meetingId, String scanResult) {
+        Type type = new TypeToken<Map<String, String>>() {
+        }.getType();
         Map<String, String> params = new Gson().fromJson(scanResult, type);
         String resMeetingId = params.get("meetingId");
-        if (!meetingId.equals(resMeetingId)){
+        if (!meetingId.equals(resMeetingId)) {
             return null;
-        }else{
-            return params.get("userId");
+        } else {
+            return params;
         }
     }
 
-    public static void navToShowQRCode(Activity activity, String meetingId) {
+    public static Observable<ActivityResult> navToShowQRCode(Activity activity, String meetingId,String signId) {
         Intent intent = new Intent(activity, ShowQRCodeActivity.class);
         intent.putExtra("meetingId", meetingId);
-        activity.startActivity(intent);
+        intent.putExtra("signId", signId);
+        return RxActivityResult.getInstance(DemoApplication.getInstance().getApplicationContext()).from(activity)
+                .startActivityForResult(intent, Constant.START_ACTIVITY_FLAG_NAV_TO_SHOW_QR_CODE);
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            mContext.setResult(RESULT_OK);
+            mContext.finish();
+        }
+        return false;
     }
 }

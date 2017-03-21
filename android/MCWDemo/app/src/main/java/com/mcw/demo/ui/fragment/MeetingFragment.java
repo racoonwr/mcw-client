@@ -22,10 +22,13 @@ import com.mcw.demo.model.MeetingListItemEntity;
 import com.mcw.demo.presenter.MeetingFragmentPresenter;
 import com.mcw.demo.ui.activity.MeetingActivity;
 import com.mcw.demo.ui.adapter.MeetingListRecyclerViewAdapter;
+import com.mcw.demo.util.StringUtils;
 import com.mcw.demo.util.rxjavaresult.ActivityResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import rx.Subscriber;
 
@@ -95,9 +98,9 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
     @Override
     public void finishLoadNetMeetingData(List<MeetingListItemEntity> newMeetingData, boolean hasMore, boolean reset) {
         meetingSrl.setRefreshing(false);
-        if (reset){
+        if (reset) {
             adapter.refreshDatas(newMeetingData);
-        }else{
+        } else {
             adapter.appendDatas(newMeetingData);
         }
         if (!hasMore) {
@@ -156,9 +159,42 @@ public class MeetingFragment extends BaseFragment implements IMeetingFragment, B
     };
 
     @Override
-    public void OnItemClick(View v, int adapterPosition) {
-        MeetingListItemEntity entity = adapter.getData(adapterPosition);
-        MeetingActivity.navToViewMeetingDetail(getActivity(), entity.getMeetingId(), entity.getCreatedBy(), entity.getStatusCode());
+    public void OnItemClick(View v, final int adapterPosition) {
+        final MeetingListItemEntity entity = adapter.getData(adapterPosition);
+        MeetingActivity.navToViewMeetingDetail(getActivity(), entity.getMeetingId(), entity.getCreatedBy(), entity.getStatusCode())
+                .subscribe(new Subscriber<ActivityResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(final ActivityResult activityResult) {
+                        final String newMeetingStatusCode = activityResult.getData().getStringExtra("newStatusCode");
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (StringUtils.isEmpty(newMeetingStatusCode))
+                                            return;
+                                        if (entity.getStatusCode().equals(newMeetingStatusCode))
+                                            return;
+                                        entity.setStatusCode(newMeetingStatusCode);
+                                        adapter.notifyItemChanged(adapterPosition);
+                                    }
+                                });
+                            }
+                        }, 1000);
+
+                    }
+                });
     }
 
     @Override

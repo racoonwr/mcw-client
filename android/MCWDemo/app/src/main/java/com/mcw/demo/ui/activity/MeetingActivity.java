@@ -27,9 +27,11 @@ import com.mcw.demo.DemoApplication;
 import com.mcw.demo.api.DemoApiFactory;
 import com.mcw.demo.config.Constant;
 import com.mcw.demo.model.MeetingBaseInfoEntity;
+import com.mcw.demo.model.MeetingDetailEntity;
 import com.mcw.demo.model.MyVoteItemEntity;
 import com.mcw.demo.model.SelectedUserEntity;
 import com.mcw.demo.model.SelectedUserListEntity;
+import com.mcw.demo.model.SignInfoEntity;
 import com.mcw.demo.model.SummaryInfoEntity;
 import com.mcw.demo.model.UserInfo;
 import com.mcw.demo.model.VoteInfoEntity;
@@ -159,13 +161,13 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
         return RxActivityResult.getInstance(activity).from(activity).startActivityForResult(intent, Constant.START_ACTIVITY_FLAG_NAV_TO_CREATE_MEETING);
     }
 
-    public static void navToViewMeetingDetail(Activity activity, String meetingId, String createdBy, String statusCode) {
+    public static Observable<ActivityResult> navToViewMeetingDetail(Activity activity, String meetingId, String createdBy, String statusCode) {
         Intent intent = new Intent(activity, MeetingActivity.class);
         intent.putExtra("modelType", MODEL_TYPE_VIEW_DETAIL);
         intent.putExtra("meetingId", meetingId);
         intent.putExtra("createdBy", createdBy);
         intent.putExtra("statusCode", statusCode);
-        activity.startActivity(intent);
+        return RxActivityResult.getInstance(activity).from(activity).startActivityForResult(intent, Constant.START_ACTIVITY_FLAG_NAV_TO_VIEW_MEETING_DETAIL);
     }
 
     @Override
@@ -230,7 +232,7 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
             voteInfoEntity.setList(myVoteList);
             voteInfoType.setData(voteInfoEntity);
             datas.add(voteInfoType);
-
+            loadUsers();
         } else {
             setTitle("会议详情");
             if ("SUMMARY".equals(statusCode) || "FINISHED".equals(statusCode)) {
@@ -248,7 +250,7 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
             loadMeetingInfoFromNet();
         }
         adapter.refreshDatas(datas);
-        loadUsers();
+
     }
 
     private void loadUsers() {
@@ -291,10 +293,62 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
                 startToSignIn();
                 break;
             case MODEL_TYPE_START_SIGN_IN:
-                ShowQRCodeActivity.navToShowQRCode(mContext, meetingId);
+                String signId = "";
+                for (SelectedUserEntity entity : selectedUserList) {
+                    if (UserInfo.getInstance().getId().equals(entity.getUserId())) {
+                        signId = entity.getSignId();
+                        break;
+                    }
+                }
+                ShowQRCodeActivity.navToShowQRCode(mContext, meetingId,signId).subscribe(new Subscriber<ActivityResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(ActivityResult activityResult) {
+                        if (activityResult.isOk()) {
+                            ToastMaster.popToast(mContext, "签到成功");
+                            setTitle("会议详情（已签到）");
+                        } else {
+                            ToastMaster.popToast(mContext, "未签到成功");
+                        }
+                    }
+                });
                 break;
             case MODEL_TYPE_IN_MEETING:
-                ScanQRCodeActivity.navToScanQRCode(mContext, meetingId);
+                ScanQRCodeActivity.navToScanQRCode(mContext, meetingId).subscribe(new Subscriber<ActivityResult>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(ActivityResult activityResult) {
+                        if (activityResult.isOk()) {
+                            String userId = activityResult.getData().getStringExtra("userId");
+                            for (SelectedUserEntity entity : selectedUserListEntity.getList()) {
+                                if (entity.getUserId().equals(userId)) {
+                                    entity.setIsSigned(1);
+                                    ToastMaster.popToast(mContext, entity.getName() + "已签到");
+                                    adapter.notifyItemChanged(1);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                });
                 break;
             case MODEL_TYPE_INPUT_SUMMARY:
                 createSummary();
@@ -446,7 +500,7 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
     }
 
     private void loadMeetingInfoFromNet() {
-        DemoApiFactory.getInstance().getMeetingBaseInfo(meetingId).subscribe(new Subscriber<List<MeetingBaseInfoEntity>>() {
+        DemoApiFactory.getInstance().getMeetingDetail(meetingId).subscribe(new Subscriber<List<MeetingDetailEntity>>() {
             @Override
             public void onCompleted() {
 
@@ -455,23 +509,41 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
             @Override
             public void onError(Throwable e) {
                 e.printStackTrace();
-                ToastMaster.popToast(mContext, "无会议记录");
+                ToastMaster.popToast(mContext, "无会议信息");
             }
 
             @Override
-            public void onNext(List<MeetingBaseInfoEntity> meetingBaseInfoEntities) {
+            public void onNext(List<MeetingDetailEntity> meetingBaseInfoEntities) {
                 if (meetingBaseInfoEntities.size() > 0) {
-                    meetingBaseInfoEntity.setTitle(meetingBaseInfoEntities.get(0).getTitle());
-                    meetingBaseInfoEntity.setLocation(meetingBaseInfoEntities.get(0).getLocation());
-                    meetingBaseInfoEntity.setEndDatePlan(meetingBaseInfoEntities.get(0).getEndDatePlan());
-                    meetingBaseInfoEntity.setStartDatePlan(meetingBaseInfoEntities.get(0).getStartDatePlan());
-                    meetingBaseInfoEntity.setMeetingRequire(meetingBaseInfoEntities.get(0).getMeetingRequire());
-                    meetingBaseInfoEntity.setStatusCode(meetingBaseInfoEntities.get(0).getStatusCode());
-                    meetingBaseInfoEntity.setCreatedBy(meetingBaseInfoEntities.get(0).getCreatedBy());
-                    meetingBaseInfoEntity.setSummaryInfoId(meetingBaseInfoEntities.get(0).getSummaryInfoId());
-                    meetingBaseInfoEntity.setMeetingId(meetingBaseInfoEntities.get(0).getMeetingId());
-                    meetingBaseInfoEntity.setCreationDate(meetingBaseInfoEntities.get(0).getCreationDate());
-                    adapter.notifyItemChanged(0);
+                    MeetingBaseInfoEntity tmpBaseInfoEntity = meetingBaseInfoEntities.get(0).getBaseInfo();
+                    meetingBaseInfoEntity.setTitle(tmpBaseInfoEntity.getTitle());
+                    meetingBaseInfoEntity.setLocation(tmpBaseInfoEntity.getLocation());
+                    meetingBaseInfoEntity.setEndDatePlan(tmpBaseInfoEntity.getEndDatePlan());
+                    meetingBaseInfoEntity.setStartDatePlan(tmpBaseInfoEntity.getStartDatePlan());
+                    meetingBaseInfoEntity.setMeetingRequire(tmpBaseInfoEntity.getMeetingRequire());
+                    meetingBaseInfoEntity.setStatusCode(tmpBaseInfoEntity.getStatusCode());
+                    meetingBaseInfoEntity.setCreatedBy(tmpBaseInfoEntity.getCreatedBy());
+                    meetingBaseInfoEntity.setSummaryInfoId(tmpBaseInfoEntity.getSummaryInfoId());
+                    meetingBaseInfoEntity.setMeetingId(tmpBaseInfoEntity.getMeetingId());
+                    meetingBaseInfoEntity.setCreationDate(tmpBaseInfoEntity.getCreationDate());
+                    List<SignInfoEntity> infos = meetingBaseInfoEntities.get(0).getParticipants();
+                    if (infos != null && infos.size() > 0) {
+                        for (SignInfoEntity tmp : infos) {
+                            SelectedUserEntity entity = new SelectedUserEntity();
+                            entity.setSignId(tmp.getSignId());
+                            entity.setUserId(tmp.getParticipantId());
+                            entity.setName(tmp.getName());
+                            entity.setPhotoUrl(tmp.getPhotoUrl());
+                            entity.setPhone(tmp.getPhone());
+                            if (tmp.getSignDate() != null) {
+                                entity.setIsSigned(1);
+                            } else {
+                                entity.setIsSigned(0);
+                            }
+                            selectedUserList.add(entity);
+                        }
+                    }
+                    adapter.notifyItemRangeChanged(0, 2);
                     if (!StringUtils.isEmpty(meetingBaseInfoEntity.getSummaryInfoId())) {
                         getSummaryInfo();
                     }
@@ -678,6 +750,12 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
             return true;
         } else if (item.getItemId() == R.id.end_meeting) {
             endMeeting();
+            return true;
+        } else if (item.getItemId() == android.R.id.home) {
+            Intent i = getIntent();
+            i.putExtra("newStatusCode", meetingBaseInfoEntity.getStatusCode());
+            this.setResult(RESULT_CANCELED, i);
+            this.finish(); // back button
             return true;
         } else {
             return super.onOptionsItemSelected(item);

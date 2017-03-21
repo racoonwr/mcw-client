@@ -52,6 +52,11 @@ public class PeopleSelectRecyclerViewAdapter extends HFSingleTypeRecyAdapter<Sel
             } else {
                 holder.deleteIcon.setVisibility(View.GONE);
             }
+            if (entity.getIsSigned() == 1){
+                holder.photoCov.setVisibility(View.GONE);
+            }else{
+                holder.photoCov.setVisibility(View.VISIBLE);
+            }
         }
     }
 

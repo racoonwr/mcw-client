@@ -126,6 +126,10 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
         l.setDrawInside(false);
         l.setEnabled(false);
 
+        getDataFromNet();
+    }
+
+    private void getDataFromNet(){
         DemoApiFactory.getInstance().getVoteDetail(voteId).subscribe(new Subscriber<List<VoteDetailEntity>>() {
             @Override
             public void onCompleted() {
@@ -285,19 +289,15 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
         String resultCode = "";
         switch (view.getId()) {
             case R.id.reject_btn:
-                counts[1]++;
                 resultCode = "REJECT";
                 break;
             case R.id.giveup_btn:
                 resultCode = "GIVEUP";
-                counts[3]++;
                 break;
             case R.id.keep_btn:
-                counts[2]++;
                 resultCode = "KEEP";
                 break;
             case R.id.agree_btn:
-                counts[0]++;
                 resultCode = "AGREE";
                 break;
             default:
@@ -323,7 +323,7 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
                     btnsLl.setVisibility(View.GONE);
                     voteResultTv.setVisibility(View.VISIBLE);
                     voteResultTv.setText("已选择：" + resultString);
-                    setData(counts);
+                    getDataFromNet();
                 } else {
                     ToastMaster.popToast(mContext, "投票失败");
                 }

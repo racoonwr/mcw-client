@@ -18,11 +18,21 @@ public class SelectedUserEntity {
     private String phone;
     private String photoUrl;
     private String gender;
+    @Expose
+    private String signId;
     private int isSigned;
     @Expose
     private int photoResId;
     @Expose
     private boolean isPreview;
+
+    public String getSignId() {
+        return signId;
+    }
+
+    public void setSignId(String signId) {
+        this.signId = signId;
+    }
 
     public int getIsSigned() {
         return isSigned;

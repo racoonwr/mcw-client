@@ -57,4 +57,5 @@ dependencies {
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+//    compile 'com.github.navasmdc:MaterialDesign:1.5@aar'
 }
