@@ -63,7 +63,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 import rx.Observable;
 import rx.Subscriber;
 
-public class MeetingActivity extends BaseActivity implements SelectedUserType.SelectedUserTypeSubViewOnClickListener, SummaryInfoType.NinePhotoLayoutListener, CalendarDatePickerDialogFragment.OnDateSetListener, RadialTimePickerDialogFragment.OnTimeSetListener, PeopleSelectAdapterListener {
+public class MeetingActivity extends BaseActivity implements SelectedUserType.SelectedUserTypeSubViewOnClickListener, SummaryInfoType.NinePhotoLayoutListener, CalendarDatePickerDialogFragment.OnDateSetListener, RadialTimePickerDialogFragment.OnTimeSetListener, PeopleSelectAdapterListener, VoteInfoType.OnVoteItemClickListener {
 
     public static final int MODEL_TYPE_NOT_DEFINE = 0x1000;
     public static final int MODEL_TYPE_CREATE_MEETING = 0x1001;  //创建会议
@@ -144,9 +144,9 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
                         MyVoteItemEntity myVoteItemEntity = new MyVoteItemEntity();
                         myVoteItemEntity.setUserId(UserInfo.getInstance().getId());
                         myVoteItemEntity.setVoteId(UUID.randomUUID().toString());
-                        myVoteItemEntity.setStatusCode("INVOTING");
+                        myVoteItemEntity.setStatusCode("NEW");
                         myVoteItemEntity.setVoteContent(activityResult.getData().getStringExtra("voteContent"));
-                        myVoteItemEntity.setAnonymity(activityResult.getData().getIntExtra("noName", 1));
+                        myVoteItemEntity.setAnonymity(activityResult.getData().getIntExtra("anonymity", 1));
                         myVoteList.add(myVoteItemEntity);
                         adapter.notifyItemChanged(2);
                     }
@@ -225,7 +225,7 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
             setTitle("新建会议");
             meetingActionBtn.setText("创建");
             //投票信息
-            VoteInfoType voteInfoType = new VoteInfoType();
+            VoteInfoType voteInfoType = new VoteInfoType(mContext);
             VoteInfoEntity voteInfoEntity = new VoteInfoEntity();
             voteInfoEntity.setType(TYPE_VOTE_LIST);
             myVoteList = new ArrayList<>();
@@ -300,7 +300,7 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
                         break;
                     }
                 }
-                ShowQRCodeActivity.navToShowQRCode(mContext, meetingId,signId).subscribe(new Subscriber<ActivityResult>() {
+                ShowQRCodeActivity.navToShowQRCode(mContext, meetingId, signId).subscribe(new Subscriber<ActivityResult>() {
                     @Override
                     public void onCompleted() {
 
@@ -315,7 +315,8 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
                     public void onNext(ActivityResult activityResult) {
                         if (activityResult.isOk()) {
                             ToastMaster.popToast(mContext, "签到成功");
-                            setTitle("会议详情（已签到）");
+                            setTitle("会议详情(已签到)");
+                            meetingActionBtn.setVisibility(View.GONE);
                         } else {
                             ToastMaster.popToast(mContext, "未签到成功");
                         }
@@ -419,7 +420,7 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
         meetingBaseInfoEntity.setMeetingId(meetingId);
         meetingBaseInfoEntity.setStatusCode("CREATED");
         meetingBaseInfoEntity.setCreatedBy(UserInfo.getInstance().getId());
-        DemoApiFactory.getInstance().createMeeting(meetingBaseInfoEntity).subscribe(new Subscriber<Boolean>() {
+        DemoApiFactory.getInstance().createMeeting(meetingBaseInfoEntity,selectedUserList).subscribe(new Subscriber<Boolean>() {
             @Override
             public void onCompleted() {
 
@@ -500,7 +501,7 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
     }
 
     private void loadMeetingInfoFromNet() {
-        DemoApiFactory.getInstance().getMeetingDetail(meetingId).subscribe(new Subscriber<List<MeetingDetailEntity>>() {
+        DemoApiFactory.getInstance().getMeetingDetail(meetingId).subscribe(new Subscriber<MeetingDetailEntity>() {
             @Override
             public void onCompleted() {
 
@@ -513,9 +514,9 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
             }
 
             @Override
-            public void onNext(List<MeetingDetailEntity> meetingBaseInfoEntities) {
-                if (meetingBaseInfoEntities.size() > 0) {
-                    MeetingBaseInfoEntity tmpBaseInfoEntity = meetingBaseInfoEntities.get(0).getBaseInfo();
+            public void onNext(MeetingDetailEntity meetingDetailEntity) {
+                if (meetingBaseInfoEntity != null) {
+                    MeetingBaseInfoEntity tmpBaseInfoEntity = meetingDetailEntity.getBaseInfo();
                     meetingBaseInfoEntity.setTitle(tmpBaseInfoEntity.getTitle());
                     meetingBaseInfoEntity.setLocation(tmpBaseInfoEntity.getLocation());
                     meetingBaseInfoEntity.setEndDatePlan(tmpBaseInfoEntity.getEndDatePlan());
@@ -526,7 +527,7 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
                     meetingBaseInfoEntity.setSummaryInfoId(tmpBaseInfoEntity.getSummaryInfoId());
                     meetingBaseInfoEntity.setMeetingId(tmpBaseInfoEntity.getMeetingId());
                     meetingBaseInfoEntity.setCreationDate(tmpBaseInfoEntity.getCreationDate());
-                    List<SignInfoEntity> infos = meetingBaseInfoEntities.get(0).getParticipants();
+                    List<SignInfoEntity> infos = meetingDetailEntity.getParticipants();
                     if (infos != null && infos.size() > 0) {
                         for (SignInfoEntity tmp : infos) {
                             SelectedUserEntity entity = new SelectedUserEntity();
@@ -539,6 +540,14 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
                                 entity.setIsSigned(1);
                             } else {
                                 entity.setIsSigned(0);
+                            }
+                            if (entity.getUserId().equals(UserInfo.getInstance().getId()) && !meetingBaseInfoEntity.getCreatedBy().equals(UserInfo.getInstance().getId())) {
+                                if (entity.getIsSigned() == 1) {
+                                    setTitle("会议详情(已签到)");
+                                    meetingActionBtn.setVisibility(View.GONE);
+                                } else {
+                                    setTitle("会议详情(未签到)");
+                                }
                             }
                             selectedUserList.add(entity);
                         }
@@ -573,9 +582,9 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
                     MyVoteItemEntity myVoteItemEntity = new MyVoteItemEntity();
                     myVoteItemEntity.setUserId(UserInfo.getInstance().getId());
                     myVoteItemEntity.setVoteId(UUID.randomUUID().toString());
-                    myVoteItemEntity.setStatusCode("INVOTING");
+                    myVoteItemEntity.setStatusCode("NEW");
                     myVoteItemEntity.setVoteContent(activityResult.getData().getStringExtra("voteContent"));
-                    myVoteItemEntity.setAnonymity(activityResult.getData().getIntExtra("noName", 1));
+                    myVoteItemEntity.setAnonymity(activityResult.getData().getIntExtra("anonymity", 1));
 
                     DemoApiFactory.getInstance().createVote(meetingId, myVoteItemEntity).subscribe(new Subscriber<Boolean>() {
                         @Override
@@ -922,5 +931,30 @@ public class MeetingActivity extends BaseActivity implements SelectedUserType.Se
                     .build();
         }
         phoneDialog.show();
+    }
+
+    @Override
+    public void navToItemDetail(final int index) {
+        CreateVoteActivity.navToReEditVote(mContext,myVoteList.get(index)).subscribe(new Subscriber<ActivityResult>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(ActivityResult activityResult) {
+                if (activityResult.isOk()) {
+                    MyVoteItemEntity changeEntity = myVoteList.get(index);
+                    changeEntity.setVoteContent(activityResult.getData().getStringExtra("voteContent"));
+                    changeEntity.setAnonymity(activityResult.getData().getIntExtra("anonymity", 1));
+                    adapter.notifyItemChanged(2);
+                }
+            }
+        });
     }
 }

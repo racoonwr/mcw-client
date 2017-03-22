@@ -78,8 +78,6 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
         mContext = this;
         setTitle("投票详情");
         voteId = getIntent().getStringExtra("voteId");
-        voteContextTv.setText(voteId);
-
 
         voteChart.setUsePercentValues(true);
         voteChart.getDescription().setEnabled(false);
@@ -125,7 +123,6 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
         l.setDrawInside(false);
         l.setEnabled(false);
-
         getDataFromNet();
     }
 
@@ -196,10 +193,10 @@ public class VoteDetailActivity extends BaseActivity implements OnChartValueSele
         // NOTE: The order of the entries when being added to the entries array determines their position around the center of
         // the chart.
         DecimalFormat df = new DecimalFormat("0.00");//格式化小数
-        entries.add(new PieEntry(Float.parseFloat(df.format(counts[0] / total)), mParties[0]));
-        entries.add(new PieEntry(Float.parseFloat(df.format(counts[1] / total)), mParties[1]));
-        entries.add(new PieEntry(Float.parseFloat(df.format(counts[2] / total)), mParties[2]));
-        entries.add(new PieEntry(Float.parseFloat(df.format(counts[3] / total)), mParties[3]));
+        entries.add(new PieEntry(Float.parseFloat(df.format((float)counts[0] / total)), mParties[0]));
+        entries.add(new PieEntry(Float.parseFloat(df.format((float)counts[1] / total)), mParties[1]));
+        entries.add(new PieEntry(Float.parseFloat(df.format((float)counts[2] / total)), mParties[2]));
+        entries.add(new PieEntry(Float.parseFloat(df.format((float)counts[3] / total)), mParties[3]));
 
         PieDataSet dataSet = new PieDataSet(entries, "Election Results");
         dataSet.setSliceSpace(3f);

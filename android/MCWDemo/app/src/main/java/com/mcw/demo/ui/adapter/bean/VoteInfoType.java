@@ -27,9 +27,11 @@ import butterknife.ButterKnife;
  * @email wurun@zizizizizi.com
  * @date 2017/3/10
  */
-public class VoteInfoType extends BaseHolderType<VoteInfoEntity, VoteInfoType.Viewholder> {
-
-    public VoteInfoType() {
+public class VoteInfoType extends BaseHolderType<VoteInfoEntity, VoteInfoType.Viewholder> implements BasicRecyViewHolder.OnItemClickListener {
+    private OnVoteItemClickListener mListener;
+    private MyVoteRecyclerViewAdapter voteAdapter;
+    public VoteInfoType(OnVoteItemClickListener listener) {
+        this.mListener = listener;
     }
 
     @Override
@@ -44,12 +46,18 @@ public class VoteInfoType extends BaseHolderType<VoteInfoEntity, VoteInfoType.Vi
 
     @Override
     public void bindDataToHolder(Viewholder viewholder, VoteInfoEntity voteInfoEntity, int postion) {
-        MyVoteRecyclerViewAdapter voteAdapter = new MyVoteRecyclerViewAdapter();
+        voteAdapter = new MyVoteRecyclerViewAdapter();
         viewholder.voteListRv.setItemAnimator(new DefaultItemAnimator());
         viewholder.voteListRv.addItemDecoration(new HFLineVerComDecoration(1, Color.parseColor("#efefef")));
         viewholder.voteListRv.setLayoutManager(new LinearLayoutManager(viewholder.itemView.getContext()));
         viewholder.voteListRv.setAdapter(voteAdapter);
         voteAdapter.refreshDatas(voteInfoEntity.getList());
+        voteAdapter.setItemClickListener(this);
+    }
+
+    @Override
+    public void OnItemClick(View v, int adapterPosition) {
+        mListener.navToItemDetail(adapterPosition);
     }
 
     public static class Viewholder extends BasicRecyViewHolder {
@@ -67,5 +75,9 @@ public class VoteInfoType extends BaseHolderType<VoteInfoEntity, VoteInfoType.Vi
             ButterKnife.bind(this, itemView);
 
         }
+    }
+
+    public interface OnVoteItemClickListener{
+        void navToItemDetail(int index);
     }
 }

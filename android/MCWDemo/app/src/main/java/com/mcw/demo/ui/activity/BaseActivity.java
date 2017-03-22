@@ -11,12 +11,18 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.mcw.demo.ui.widght.swipback.SwipeBackActivityBase;
+import com.mcw.demo.ui.widght.swipback.SwipeBackActivityHelper;
+import com.mcw.demo.ui.widght.swipback.SwipeBackLayout;
+import com.mcw.demo.ui.widght.swipback.Utils;
+
 /**
  * 基础类
  * Created by Alex on 2016/5/23.
  */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements SwipeBackActivityBase {
     public BaseActivity mContext;
+    private SwipeBackActivityHelper mHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,8 +36,38 @@ public abstract class BaseActivity extends AppCompatActivity {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        initResource(savedInstanceState);
         mContext = this;
+        mHelper = new SwipeBackActivityHelper(this);
+        mHelper.onActivityCreate();
+        initResource(savedInstanceState);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mHelper.onPostCreate();
+    }
+    @Override
+    public View findViewById(int id) {
+        View v = super.findViewById(id);
+        if (v == null && mHelper != null)
+            return mHelper.findViewById(id);
+        return v;
+    }
+
+    @Override
+    public SwipeBackLayout getSwipeBackLayout() {
+        return mHelper.getSwipeBackLayout();
+    }
+    @Override
+    public void setSwipeBackEnable(boolean enable) {
+        getSwipeBackLayout().setEnableGesture(enable);
+    }
+
+    @Override
+    public void scrollToFinishActivity() {
+        Utils.convertActivityToTranslucent(this);
+        getSwipeBackLayout().scrollToFinishActivity();
     }
 
     /**

@@ -27,7 +27,8 @@ public class DemoApplication extends BaseApplication {
         instance = this;
         init();
 
-        NetworkConfigManager.getInstance().setRootUrl("http://123.207.169.176:8081/");
+        NetworkConfigManager.getInstance().setRootUrl("http://192.168.1.125:8081/");
+//        NetworkConfigManager.getInstance().setRootUrl("http://123.207.169.176:8081/");
 
 //        Thread.setDefaultUncaughtExceptionHandler(AppException
 //                .getAppExceptionHandler(this));

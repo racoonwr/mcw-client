@@ -64,7 +64,7 @@ public interface ApiService {
      */
     @GET("meeting/detail/{meetingId}")
     @Headers("Content-Type:" + RetrofitClient.JSON)
-    Observable<ApiResponse<List<MeetingDetailEntity>>> getMeetingDetail(@Path("meetingId") String meetingId);
+    Observable<ApiResponse<MeetingDetailEntity>> getMeetingDetail(@Path("meetingId") String meetingId);
 
     /**
      * 开始会议

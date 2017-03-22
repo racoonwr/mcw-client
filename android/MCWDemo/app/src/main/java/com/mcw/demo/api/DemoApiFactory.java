@@ -9,6 +9,7 @@ import com.mcw.demo.model.SummaryInfoEntity;
 import com.mcw.demo.model.UserInfo;
 import com.mcw.demo.model.VoteDetailEntity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class DemoApiFactory extends ApiFactory {
         return apiService.getMeetingList(userId, pageNo, pageSize).map(new HttpResultFunc<List<MeetingListItemEntity>>()).compose(SchedulersCompat.<List<MeetingListItemEntity>>applyExecutorSchedulers());
     }
 
-    public Observable<Boolean> createMeeting(MeetingBaseInfoEntity entity) {
+    public Observable<Boolean> createMeeting(MeetingBaseInfoEntity entity, List<SelectedUserEntity> list) {
         Map<String, Object> map = new HashMap<>();
         map.put("meetingId", entity.getMeetingId());
         map.put("userId", UserInfo.getInstance().getId());
@@ -50,6 +51,11 @@ public class DemoApiFactory extends ApiFactory {
         map.put("endDatePlan", entity.getEndDatePlan());
         map.put("meetingRequire", entity.getMeetingRequire());
         map.put("location", entity.getLocation());
+        List<String> participants = new ArrayList<>();
+        for (SelectedUserEntity user : list) {
+            participants.add(user.getUserId());
+        }
+        map.put("participants", participants);
         return apiService.createMeeting(map).map(new HttpResultFunc<Boolean>()).compose(SchedulersCompat.<Boolean>applyExecutorSchedulers());
     }
 
@@ -67,8 +73,8 @@ public class DemoApiFactory extends ApiFactory {
         return apiService.endMeeting(map).map(new HttpResultFunc<Boolean>()).compose(SchedulersCompat.<Boolean>applyExecutorSchedulers());
     }
 
-    public Observable<List<MeetingDetailEntity>> getMeetingDetail(String meetingId) {
-        return apiService.getMeetingDetail(meetingId).map(new HttpResultFunc<List<MeetingDetailEntity>>()).compose(SchedulersCompat.<List<MeetingDetailEntity>>applyExecutorSchedulers());
+    public Observable<MeetingDetailEntity> getMeetingDetail(String meetingId) {
+        return apiService.getMeetingDetail(meetingId).map(new HttpResultFunc<MeetingDetailEntity>()).compose(SchedulersCompat.<MeetingDetailEntity>applyExecutorSchedulers());
     }
 
     public Observable<List<SelectedUserEntity>> getAllUser() {

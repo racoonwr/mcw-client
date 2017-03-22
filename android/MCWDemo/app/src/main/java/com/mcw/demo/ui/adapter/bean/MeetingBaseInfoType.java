@@ -136,9 +136,8 @@ public class MeetingBaseInfoType extends BaseHolderType<MeetingBaseInfoEntity, M
             Calendar now = Calendar.getInstance();
             now.set(Calendar.SECOND, 0);
             endDatePlan = now.getTimeInMillis();
-            meetingBaseInfoEntity.setEndDatePlan(endDatePlan);
         }
-
+        meetingBaseInfoEntity.setEndDatePlan(endDatePlan);
         holder.planEndDateEt.setText(DateUtil.translateDate(endDatePlan, DateUtil.yyyyMMDD));
         holder.planEndTimeEt.setText(DateUtil.translateDate(endDatePlan, DateUtil.HHmm));
     }
